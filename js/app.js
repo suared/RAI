@@ -9,6 +9,146 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // App state
     let currentStepIndex = 0;
+    let activeMockDataSet = 'default';
+    
+    // Mock data sets for different scenarios
+    const mockDataSets = {
+        default: {
+            marketIntelligence: {
+                specificProblemInsights: [
+                    { id: 'sp1', text: 'Users often find competitor X\'s solution too complex in this area.', type: 'problem_statement' },
+                    { id: 'sp2', text: 'Addressing this directly could significantly improve user onboarding friction.', type: 'problem_statement' },
+                ],
+                competitorFeatures: [
+                    { id: 'cf1', text: 'Competitor A offers advanced AI-driven analytics for {softwarePrompt}.', type: 'competitor' },
+                    { id: 'cf2', text: 'Competitor B has a highly-rated mobile-first interface for similar solutions.', type: 'competitor' },
+                    { id: 'cf3', text: 'Integration with popular third-party tools is a key feature of Competitor C.', type: 'competitor' },
+                ],
+                userChallenges: [
+                    { id: 'uc1', text: 'Users frequently report difficulties with the initial setup process in existing tools for {softwarePrompt}.', type: 'challenge' },
+                    { id: 'uc2', text: 'Lack of customizable reporting is a common pain point mentioned in reviews.', type: 'challenge' },
+                    { id: 'uc3', text: 'Poor customer support from existing solutions leads to high churn.', type: 'challenge' },
+                ]
+            },
+            companyInsights: {
+                marketShare: '15% (Estimated)',
+                topCompetitors: [
+                    { id: 'comp1', name: 'Innovatech Solutions', strength: 'Strong R&D, large patent portfolio.' },
+                    { id: 'comp2', name: 'MarketMover Inc.', strength: 'Aggressive marketing, wide distribution network.' },
+                    { id: 'comp3', name: 'UserFirst Corp.', strength: 'Excellent customer support, high user retention.' },
+                ],
+                swot: {
+                    strengths: [
+                        { id: 's1', text: 'Unique proprietary algorithm for core functionality.' },
+                        { id: 's2', text: 'Experienced cross-functional engineering team.' },
+                    ],
+                    weaknesses: [
+                        { id: 'w1', text: 'Limited brand recognition in new target markets.' },
+                        { id: 'w2', text: 'Current infrastructure may not scale easily for 10x growth.' },
+                    ],
+                    opportunities: [
+                        { id: 'o1', text: 'Growing demand for AI-driven automation in the specified sector.' },
+                        { id: 'o2', text: 'Potential strategic partnerships with complementary service providers.' },
+                    ],
+                    threats: [
+                        { id: 't1', text: 'Rapid technological advancements by key competitors.' },
+                        { id: 't2', text: 'Potential for new data privacy regulatory hurdles.' },
+                    ],
+                },
+                userFeedbacks: [
+                    { id: 'uf1', text: 'The onboarding process is too complicated and time-consuming for new users.', priority: 1 },
+                    { id: 'uf2', text: 'Lack of integration with our existing primary CRM (e.g., Salesforce).', priority: 2 },
+                    { id: 'uf3', text: 'Reporting features are not customizable enough for our specific business needs.', priority: 3 },
+                    { id: 'uf4', text: 'The mobile application experience is clunky and significantly slower than desktop.', priority: 4 },
+                    { id: 'uf5', text: 'Customer support response times are inconsistent, especially for urgent issues.', priority: 5 },
+                ]
+            },
+            parsedBacklog: {
+                features: {
+                    increasedRevenue: [
+                        { id: 'fr1', text: 'Develop and implement a premium subscription tier offering advanced analytics and priority support.' },
+                        { id: 'fr2', text: 'Introduce an affiliate marketing program to incentivize referrals and expand reach.' },
+                    ],
+                    increasedMarketShare: [
+                        { id: 'fms1', text: 'Launch a targeted digital marketing campaign focusing on small to medium-sized businesses (SMBs).' },
+                        { id: 'fms2', text: 'Expand language support to include Spanish and German to cater to European markets.' },
+                    ],
+                    timeToMarket: [
+                        { id: 'fttm1', text: 'Refactor the legacy user authentication module to improve development velocity for new features.' },
+                        { id: 'fttm2', text: 'Adopt a comprehensive CI/CD pipeline for automated testing and deployments.' },
+                    ]
+                }
+            }
+        },
+        startup: {
+            marketIntelligence: {
+                specificProblemInsights: [
+                    { id: 'sp1', text: 'Startup competitors lack enterprise-grade security features.', type: 'problem_statement' },
+                    { id: 'sp2', text: 'Early-stage companies need rapid deployment capabilities.', type: 'problem_statement' },
+                ],
+                competitorFeatures: [
+                    { id: 'cf1', text: 'Competitor A focuses on rapid prototyping for {softwarePrompt}.', type: 'competitor' },
+                    { id: 'cf2', text: 'Competitor B offers freemium model with limited features.', type: 'competitor' },
+                    { id: 'cf3', text: 'Competitor C specializes in B2B integrations.', type: 'competitor' },
+                ],
+                userChallenges: [
+                    { id: 'uc1', text: 'Startups need faster time-to-market for {softwarePrompt} solutions.', type: 'challenge' },
+                    { id: 'uc2', text: 'Limited budget constraints require cost-effective solutions.', type: 'challenge' },
+                    { id: 'uc3', text: 'Need for scalable architecture from day one.', type: 'challenge' },
+                ]
+            },
+            companyInsights: {
+                marketShare: '2% (Emerging)',
+                topCompetitors: [
+                    { id: 'comp1', name: 'StartupX', strength: 'Agile development, rapid iteration.' },
+                    { id: 'comp2', name: 'TechFlow', strength: 'Strong community engagement.' },
+                    { id: 'comp3', name: 'InnovateLab', strength: 'University partnerships, research focus.' },
+                ],
+                swot: {
+                    strengths: [
+                        { id: 's1', text: 'Agile development methodology and rapid prototyping.' },
+                        { id: 's2', text: 'Strong technical founding team with domain expertise.' },
+                    ],
+                    weaknesses: [
+                        { id: 'w1', text: 'Limited financial resources for marketing and sales.' },
+                        { id: 'w2', text: 'Small team size limits feature development velocity.' },
+                    ],
+                    opportunities: [
+                        { id: 'o1', text: 'Untapped market segment with growing demand.' },
+                        { id: 'o2', text: 'Potential for strategic partnerships with larger companies.' },
+                    ],
+                    threats: [
+                        { id: 't1', text: 'Established competitors with deep pockets.' },
+                        { id: 't2', text: 'Economic downturn affecting funding availability.' },
+                    ],
+                },
+                userFeedbacks: [
+                    { id: 'uf1', text: 'Need for faster onboarding and setup process.', priority: 1 },
+                    { id: 'uf2', text: 'Integration with popular startup tools (Slack, Notion, etc.).', priority: 2 },
+                    { id: 'uf3', text: 'Affordable pricing tiers for small teams.', priority: 3 },
+                    { id: 'uf4', text: 'API access for custom integrations.', priority: 4 },
+                    { id: 'uf5', text: 'Responsive customer support for technical issues.', priority: 5 },
+                ]
+            },
+            parsedBacklog: {
+                features: {
+                    increasedRevenue: [
+                        { id: 'fr1', text: 'Implement freemium model with premium feature upgrades.' },
+                        { id: 'fr2', text: 'Create referral program for user acquisition.' },
+                    ],
+                    increasedMarketShare: [
+                        { id: 'fms1', text: 'Develop integrations with popular startup tools.' },
+                        { id: 'fms2', text: 'Launch content marketing strategy targeting startup community.' },
+                    ],
+                    timeToMarket: [
+                        { id: 'fttm1', text: 'Build MVP with core features only.' },
+                        { id: 'fttm2', text: 'Implement automated testing and deployment pipeline.' },
+                    ]
+                }
+            }
+        }
+    };
+    
     let appData = {
         projectName: '',
         corporateGoals: '',
@@ -19,6 +159,51 @@ document.addEventListener('DOMContentLoaded', () => {
         parsedBacklogData: null, // { features, feedbackCoverage }
         epics: []
     };
+
+    // Mock data management functions
+    function setMockDataSet(dataSetName) {
+        if (mockDataSets[dataSetName]) {
+            activeMockDataSet = dataSetName;
+            console.log(`Mock data set changed to: ${dataSetName}`);
+        } else {
+            console.warn(`Mock data set "${dataSetName}" not found. Available sets:`, Object.keys(mockDataSets));
+        }
+    }
+
+    function getActiveMockDataSet() {
+        return activeMockDataSet;
+    }
+
+    function getAvailableMockDataSets() {
+        return Object.keys(mockDataSets);
+    }
+
+    function getMockData(dataType) {
+        // Use the active data set if set, otherwise determine from appData context
+        let dataSet = getActiveMockDataSet();
+        
+        // If using default, still check appData context for automatic switching
+        if (dataSet === 'default') {
+            if (appData.projectName && appData.projectName.toLowerCase().includes('startup')) {
+                dataSet = 'startup';
+            }
+        }
+        
+        console.log(`Using mock data set: ${dataSet} for ${dataType}`);
+        
+        const mockData = mockDataSets[dataSet][dataType];
+        
+        // Replace placeholders with actual values from appData
+        if (dataType === 'marketIntelligence' && appData.problemStatements && appData.problemStatements.length > 0) {
+            const problemStatement = appData.problemStatements[0];
+            mockData.specificProblemInsights = mockData.specificProblemInsights.map(insight => ({
+                ...insight,
+                text: insight.text.replace('this area', `"${problemStatement}"`)
+            }));
+        }
+        
+        return mockData;
+    }
 
     function init() {
         // Placeholder for App Logo
@@ -34,6 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stepContentWrapper.classList.remove('hidden');
             renderStepContent(currentStepIndex);
         });
+        
+        // Log mock data management status
+        console.log('App initialized with mock data sets:', getAvailableMockDataSets());
+        console.log('Use setMockDataSet("startup") to switch data sets');
     }
 
     function generateAbstractLogo() {
