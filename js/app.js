@@ -9,77 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // App state
     let currentStepIndex = 0;
-    let activeMockDataSet = 'default';
     
-    // Mock data sets for different scenarios
-    const mockDataSets = {
-        default: {
-            marketIntelligence: {
-                specificProblemInsights: [
-                    { id: 'sp1', text: 'Users often find competitor X\'s solution too complex in this area.', type: 'problem_statement' },
-                    { id: 'sp2', text: 'Addressing this directly could significantly improve user onboarding friction.', type: 'problem_statement' },
-                ],
-                competitorFeatures: [
-                    { id: 'cf1', text: 'Competitor A offers advanced AI-driven analytics for {softwarePrompt}.', type: 'competitor' },
-                    { id: 'cf2', text: 'Competitor B has a highly-rated mobile-first interface for similar solutions.', type: 'competitor' },
-                    { id: 'cf3', text: 'Integration with popular third-party tools is a key feature of Competitor C.', type: 'competitor' },
-                ],
-                userChallenges: [
-                    { id: 'uc1', text: 'Users frequently report difficulties with the initial setup process in existing tools for {softwarePrompt}.', type: 'challenge' },
-                    { id: 'uc2', text: 'Lack of customizable reporting is a common pain point mentioned in reviews.', type: 'challenge' },
-                    { id: 'uc3', text: 'Poor customer support from existing solutions leads to high churn.', type: 'challenge' },
-                ]
-            },
-            companyInsights: {
-                marketShare: '15% (Estimated)',
-                topCompetitors: [
-                    { id: 'comp1', name: 'Innovatech Solutions', strength: 'Strong R&D, large patent portfolio.' },
-                    { id: 'comp2', name: 'MarketMover Inc.', strength: 'Aggressive marketing, wide distribution network.' },
-                    { id: 'comp3', name: 'UserFirst Corp.', strength: 'Excellent customer support, high user retention.' },
-                ],
-                swot: {
-                    strengths: [
-                        { id: 's1', text: 'Unique proprietary algorithm for core functionality.' },
-                        { id: 's2', text: 'Experienced cross-functional engineering team.' },
-                    ],
-                    weaknesses: [
-                        { id: 'w1', text: 'Limited brand recognition in new target markets.' },
-                        { id: 'w2', text: 'Current infrastructure may not scale easily for 10x growth.' },
-                    ],
-                    opportunities: [
-                        { id: 'o1', text: 'Growing demand for AI-driven automation in the specified sector.' },
-                        { id: 'o2', text: 'Potential strategic partnerships with complementary service providers.' },
-                    ],
-                    threats: [
-                        { id: 't1', text: 'Rapid technological advancements by key competitors.' },
-                        { id: 't2', text: 'Potential for new data privacy regulatory hurdles.' },
-                    ],
-                },
-                userFeedbacks: [
-                    { id: 'uf1', text: 'The onboarding process is too complicated and time-consuming for new users.', priority: 1 },
-                    { id: 'uf2', text: 'Lack of integration with our existing primary CRM (e.g., Salesforce).', priority: 2 },
-                    { id: 'uf3', text: 'Reporting features are not customizable enough for our specific business needs.', priority: 3 },
-                    { id: 'uf4', text: 'The mobile application experience is clunky and significantly slower than desktop.', priority: 4 },
-                    { id: 'uf5', text: 'Customer support response times are inconsistent, especially for urgent issues.', priority: 5 },
-                ]
-            },
-            parsedBacklog: {
-                features: {
-                    increasedRevenue: [
-                        { id: 'fr1', text: 'Develop and implement a premium subscription tier offering advanced analytics and priority support.' },
-                        { id: 'fr2', text: 'Introduce an affiliate marketing program to incentivize referrals and expand reach.' },
-                    ],
-                    increasedMarketShare: [
-                        { id: 'fms1', text: 'Launch a targeted digital marketing campaign focusing on small to medium-sized businesses (SMBs).' },
-                        { id: 'fms2', text: 'Expand language support to include Spanish and German to cater to European markets.' },
-                    ],
-                    timeToMarket: [
-                        { id: 'fttm1', text: 'Refactor the legacy user authentication module to improve development velocity for new features.' },
-                        { id: 'fttm2', text: 'Adopt a comprehensive CI/CD pipeline for automated testing and deployments.' },
-                    ]
-                }
-            }
-        },
+    // Alternative data sets for different scenarios
+    const alternativeDataSets = {
         startup: {
             marketIntelligence: {
                 specificProblemInsights: [
@@ -149,49 +81,127 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // Consolidated app data with default mock data
     let appData = {
+        // User input data
         projectName: '',
         corporateGoals: '',
         problemStatements: [], // array of strings
         backlogFile: null, // File object or name string
         backlogUrl: '',
-        companyInsightsData: null, // { marketShare, topCompetitors, swot, userFeedbacks }
-        parsedBacklogData: null, // { features, feedbackCoverage }
-        epics: []
+        epics: [],
+        
+        // Mock data (default values)
+        marketIntelligence: {
+            specificProblemInsights: [
+                { id: 'sp1', text: 'Users often find competitor X\'s solution too complex in this area.', type: 'problem_statement' },
+                { id: 'sp2', text: 'Addressing this directly could significantly improve user onboarding friction.', type: 'problem_statement' },
+            ],
+            competitorFeatures: [
+                { id: 'cf1', text: 'Competitor A offers advanced AI-driven analytics for {softwarePrompt}.', type: 'competitor' },
+                { id: 'cf2', text: 'Competitor B has a highly-rated mobile-first interface for similar solutions.', type: 'competitor' },
+                { id: 'cf3', text: 'Integration with popular third-party tools is a key feature of Competitor C.', type: 'competitor' },
+            ],
+            userChallenges: [
+                { id: 'uc1', text: 'Users frequently report difficulties with the initial setup process in existing tools for {softwarePrompt}.', type: 'challenge' },
+                { id: 'uc2', text: 'Lack of customizable reporting is a common pain point mentioned in reviews.', type: 'challenge' },
+                { id: 'uc3', text: 'Poor customer support from existing solutions leads to high churn.', type: 'challenge' },
+            ]
+        },
+        companyInsights: {
+            marketShare: '15% (Estimated)',
+            topCompetitors: [
+                { id: 'comp1', name: 'Innovatech Solutions', strength: 'Strong R&D, large patent portfolio.' },
+                { id: 'comp2', name: 'MarketMover Inc.', strength: 'Aggressive marketing, wide distribution network.' },
+                { id: 'comp3', name: 'UserFirst Corp.', strength: 'Excellent customer support, high user retention.' },
+            ],
+            swot: {
+                strengths: [
+                    { id: 's1', text: 'Unique proprietary algorithm for core functionality.' },
+                    { id: 's2', text: 'Experienced cross-functional engineering team.' },
+                ],
+                weaknesses: [
+                    { id: 'w1', text: 'Limited brand recognition in new target markets.' },
+                    { id: 'w2', text: 'Current infrastructure may not scale easily for 10x growth.' },
+                ],
+                opportunities: [
+                    { id: 'o1', text: 'Growing demand for AI-driven automation in the specified sector.' },
+                    { id: 'o2', text: 'Potential strategic partnerships with complementary service providers.' },
+                ],
+                threats: [
+                    { id: 't1', text: 'Rapid technological advancements by key competitors.' },
+                    { id: 't2', text: 'Potential for new data privacy regulatory hurdles.' },
+                ],
+            },
+            userFeedbacks: [
+                { id: 'uf1', text: 'The onboarding process is too complicated and time-consuming for new users.', priority: 1 },
+                { id: 'uf2', text: 'Lack of integration with our existing primary CRM (e.g., Salesforce).', priority: 2 },
+                { id: 'uf3', text: 'Reporting features are not customizable enough for our specific business needs.', priority: 3 },
+                { id: 'uf4', text: 'The mobile application experience is clunky and significantly slower than desktop.', priority: 4 },
+                { id: 'uf5', text: 'Customer support response times are inconsistent, especially for urgent issues.', priority: 5 },
+            ]
+        },
+        parsedBacklog: {
+            features: {
+                increasedRevenue: [
+                    { id: 'fr1', text: 'Develop and implement a premium subscription tier offering advanced analytics and priority support.' },
+                    { id: 'fr2', text: 'Introduce an affiliate marketing program to incentivize referrals and expand reach.' },
+                ],
+                increasedMarketShare: [
+                    { id: 'fms1', text: 'Launch a targeted digital marketing campaign focusing on small to medium-sized businesses (SMBs).' },
+                    { id: 'fms2', text: 'Expand language support to include Spanish and German to cater to European markets.' },
+                ],
+                timeToMarket: [
+                    { id: 'fttm1', text: 'Refactor the legacy user authentication module to improve development velocity for new features.' },
+                    { id: 'fttm2', text: 'Adopt a comprehensive CI/CD pipeline for automated testing and deployments.' },
+                ]
+            }
+        },
+        
+        // Legacy properties for backward compatibility
+        companyInsightsData: null, // Will be set to appData.companyInsights when needed
+        parsedBacklogData: null, // Will be set to appData.parsedBacklog when needed
     };
 
     // Mock data management functions
-    function setMockDataSet(dataSetName) {
-        if (mockDataSets[dataSetName]) {
-            activeMockDataSet = dataSetName;
-            console.log(`Mock data set changed to: ${dataSetName}`);
+    function switchMockData(dataSetName) {
+        if (alternativeDataSets[dataSetName]) {
+            // Update appData with the alternative data set
+            const newData = alternativeDataSets[dataSetName];
+            appData.marketIntelligence = newData.marketIntelligence;
+            appData.companyInsights = newData.companyInsights;
+            appData.parsedBacklog = newData.parsedBacklog;
+            
+            // Update legacy properties for backward compatibility
+            syncLegacyProperties();
+            
+            console.log(`Mock data switched to: ${dataSetName}`);
         } else {
-            console.warn(`Mock data set "${dataSetName}" not found. Available sets:`, Object.keys(mockDataSets));
+            console.warn(`Data set "${dataSetName}" not found. Available sets:`, Object.keys(alternativeDataSets));
         }
     }
 
-    function getActiveMockDataSet() {
-        return activeMockDataSet;
+    function getAvailableDataSets() {
+        return ['default', ...Object.keys(alternativeDataSets)];
     }
 
-    function getAvailableMockDataSets() {
-        return Object.keys(mockDataSets);
+    function syncLegacyProperties() {
+        // Keep legacy properties in sync with new structure
+        appData.companyInsightsData = appData.companyInsights;
+        appData.parsedBacklogData = appData.parsedBacklog;
     }
 
     function getMockData(dataType) {
-        // Use the active data set if set, otherwise determine from appData context
-        let dataSet = getActiveMockDataSet();
-        
-        // If using default, still check appData context for automatic switching
-        if (dataSet === 'default') {
-            if (appData.projectName && appData.projectName.toLowerCase().includes('startup')) {
-                dataSet = 'startup';
-            }
+        // Check if we should auto-switch based on project name
+        if (appData.projectName && appData.projectName.toLowerCase().includes('startup') && 
+            appData.companyInsights.marketShare === '15% (Estimated)') {
+            // Auto-switch to startup data if not already switched
+            switchMockData('startup');
         }
         
-        console.log(`Using mock data set: ${dataSet} for ${dataType}`);
+        console.log(`Getting mock data for: ${dataType}`);
         
-        const mockData = mockDataSets[dataSet][dataType];
+        const mockData = appData[dataType];
         
         // Replace placeholders with actual values from appData
         if (dataType === 'marketIntelligence' && appData.problemStatements && appData.problemStatements.length > 0) {
@@ -209,6 +219,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Placeholder for App Logo
         appLogo.src = generateAbstractLogo(); // Simple generated logo
 
+        // Initialize legacy properties
+        syncLegacyProperties();
+
         renderStepper();
         // Initially, show hero, hide steps
         mainHeroImage.classList.remove('hidden');
@@ -221,8 +234,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Log mock data management status
-        console.log('App initialized with mock data sets:', getAvailableMockDataSets());
-        console.log('Use setMockDataSet("startup") to switch data sets');
+        console.log('App initialized with mock data sets:', getAvailableDataSets());
+        console.log('Use switchMockData("startup") to switch data sets');
     }
 
     function generateAbstractLogo() {
@@ -345,6 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
             dynamicContentContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading company and market insights...</p></div>`;
             try {
                 appData.companyInsightsData = await fetchCompanyInsights(appData.projectName);
+                // Sync the new data back to the consolidated structure
+                appData.companyInsights = appData.companyInsightsData;
                 dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData); // Re-render with data
             } catch (error) {
                 console.error("Error fetching company insights:", error);
@@ -437,6 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (e) { console.warn("Could not save insight field:", path.join('.'), e); }
             });
+            // Sync changes back to consolidated structure
+            appData.companyInsights = appData.companyInsightsData;
             return true;
         }
         if (stepData.id === 'backlog-parser') {
@@ -458,6 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const feature = appData.parsedBacklogData.features[category]?.find(f => f.id === id);
                     if (feature) feature.text = input.value;
                 });
+                // Sync changes back to consolidated structure
+                appData.parsedBacklog = appData.parsedBacklogData;
             }
             return true;
         }
@@ -511,20 +530,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 addProblemBtn.addEventListener('click', () => {
                     const dynamicContentContainer = document.getElementById('dynamic-step-content');
                     if (dynamicContentContainer) {
-                        // 1. Capture current values from existing input fields
+                        // 1. Capture current values from ALL input fields before re-rendering
+                        const projectNameInput = document.getElementById('project-name');
+                        const corporateGoalsInput = document.getElementById('corporate-goals');
                         const problemInputs = document.querySelectorAll('.problem-statement-input');
-                        const currentStatements = Array.from(problemInputs).map(input => input.value);
                         
-                        // 2. Set appData.problemStatements to these current values
-                        appData.problemStatements = currentStatements;
+                        // Save all current values to appData
+                        if (projectNameInput) {
+                            appData.projectName = projectNameInput.value.trim();
+                        }
+                        if (corporateGoalsInput) {
+                            appData.corporateGoals = corporateGoalsInput.value.trim();
+                        }
+                        
+                        const currentStatements = Array.from(problemInputs).map(input => input.value.trim());
+                        appData.problemStatements = currentStatements.filter(statement => statement.length > 0);
 
-                        // 3. Add a new empty problem statement to the array for the new input field
+                        // 2. Add a new empty problem statement to the array for the new input field
                         appData.problemStatements.push(''); 
                         
-                        // 4. Re-render the content based on the updated appData
+                        // 3. Re-render the content based on the updated appData
                         dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
                         
-                        // 5. Re-attach all event listeners for the new content
+                        // 4. Re-attach all event listeners for the new content
                         attachStepEventListeners(index); // Re-attach listeners
                     }
                 });
@@ -535,10 +563,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dynamicContentContainer = document.getElementById('dynamic-step-content');
 
                     if (dynamicContentContainer) {
-                        // 1. Capture current values from existing input fields
+                        // 1. Capture current values from ALL input fields before re-rendering
+                        const projectNameInput = document.getElementById('project-name');
+                        const corporateGoalsInput = document.getElementById('corporate-goals');
                         const problemInputs = document.querySelectorAll('.problem-statement-input');
-                        const currentStatements = Array.from(problemInputs).map(input => input.value);
-                        appData.problemStatements = currentStatements;
+                        
+                        // Save all current values to appData
+                        if (projectNameInput) {
+                            appData.projectName = projectNameInput.value.trim();
+                        }
+                        if (corporateGoalsInput) {
+                            appData.corporateGoals = corporateGoalsInput.value.trim();
+                        }
+                        
+                        const currentStatements = Array.from(problemInputs).map(input => input.value.trim());
+                        appData.problemStatements = currentStatements.filter(statement => statement.length > 0);
 
                         // 2. Remove the specified problem statement
                         if (idxToRemove >= 0 && idxToRemove < appData.problemStatements.length) {
@@ -586,6 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Ensure latest backlogFile/URL is saved to appData before fetching
                         validateAndSaveStep(index); // This saves backlog-file-parser and backlog-url-parser
                         appData.parsedBacklogData = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.companyInsightsData?.userFeedbacks);
+                        // Sync the new data back to the consolidated structure
+                        appData.parsedBacklog = appData.parsedBacklogData;
                         // Re-render the dynamic content of this step to show parsed data
                         dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
                         attachStepEventListeners(index); // Re-attach listeners for new content
@@ -602,4 +643,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     init();
+    window.getMockData = getMockData;
 });

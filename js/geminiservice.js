@@ -9,7 +9,7 @@ async function fetchMarketIntelligence(softwarePrompt, problemStatement = '') {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Get mock data from the app's data management system
-    const mockData = getMockData('marketIntelligence');
+    const mockData = window.getMockData('marketIntelligence');
     
     // Replace placeholders with actual values
     const processedData = {
@@ -36,7 +36,7 @@ async function fetchCompanyInsights(projectName = 'New Project') {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Get mock data from the app's data management system
-    const mockData = getMockData('companyInsights');
+    const mockData = window.getMockData('companyInsights');
 
     return {
         reportLink: 'simulated_gemini_company_insights_report.pdf',
@@ -49,10 +49,10 @@ async function fetchCompanyInsights(projectName = 'New Project') {
 
 async function fetchParsedBacklog(backlogFile, backlogUrl, userFeedbacks = []) {
     console.log("Simulating Gemini API call for Backlog Parsing. File:", backlogFile, "URL:", backlogUrl);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 750)); // Simulate network delay
 
     // Get mock data from the app's data management system
-    const mockData = getMockData('parsedBacklog');
+    const mockData = window.getMockData('parsedBacklog');
 
     const feedbackCoverage = {
         notCovered: userFeedbacks.filter((fb, i) => i % 2 !== 0).map(fb => ({ 
