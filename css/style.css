@@ -300,3 +300,33 @@ footer {
     color: #f8f9fa;
     margin-top: 40px;
 }
+
+/* Feature display styles */
+.feature-meta {
+    font-size: 0.8em;
+    color: #666;
+    font-style: italic;
+}
+
+#features-section h4 {
+    color: #007bff;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+#features-section ul {
+    margin-bottom: 20px;
+}
+
+#features-section li {
+    margin-bottom: 10px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+#features-section input[type="text"] {
+    width: 80%;
+    margin-right: 10px;
+}

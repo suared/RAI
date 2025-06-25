@@ -13,154 +13,350 @@ document.addEventListener('DOMContentLoaded', () => {
     // Alternative data sets for different scenarios
     const alternativeDataSets = {
         startup: {
-            marketIntelligence: {
-                specificProblemInsights: [
-                    { id: 'sp1', text: 'Startup competitors lack enterprise-grade security features.', type: 'problem_statement' },
-                    { id: 'sp2', text: 'Early-stage companies need rapid deployment capabilities.', type: 'problem_statement' },
-                ],
-                competitorFeatures: [
-                    { id: 'cf1', text: 'Competitor A focuses on rapid prototyping for {softwarePrompt}.', type: 'competitor' },
-                    { id: 'cf2', text: 'Competitor B offers freemium model with limited features.', type: 'competitor' },
-                    { id: 'cf3', text: 'Competitor C specializes in B2B integrations.', type: 'competitor' },
-                ],
-                userChallenges: [
-                    { id: 'uc1', text: 'Startups need faster time-to-market for {softwarePrompt} solutions.', type: 'challenge' },
-                    { id: 'uc2', text: 'Limited budget constraints require cost-effective solutions.', type: 'challenge' },
-                    { id: 'uc3', text: 'Need for scalable architecture from day one.', type: 'challenge' },
-                ]
-            },
-            companyInsights: {
-                marketShare: '2% (Emerging)',
-                topCompetitors: [
-                    { id: 'comp1', name: 'StartupX', strength: 'Agile development, rapid iteration.' },
-                    { id: 'comp2', name: 'TechFlow', strength: 'Strong community engagement.' },
-                    { id: 'comp3', name: 'InnovateLab', strength: 'University partnerships, research focus.' },
-                ],
-                swot: {
-                    strengths: [
-                        { id: 's1', text: 'Agile development methodology and rapid prototyping.' },
-                        { id: 's2', text: 'Strong technical founding team with domain expertise.' },
+            competitors: [
+                {
+                    id: 'comp1',
+                    name: 'StartupX',
+                    company: 'StartupX Inc.',
+                    industry: 'Startup Solutions',
+                    user_reviews: [
+                        {
+                            positive: [
+                                'Agile development methodology and rapid prototyping.',
+                                'Strong community engagement.',
+                                'Fast time-to-market for new features.'
+                            ],
+                            negative: [
+                                'Limited financial resources for marketing and sales.',
+                                'Small team size limits feature development velocity.',
+                                'May lack enterprise-grade security features.'
+                            ],
+                            site_references: []
+                        }
                     ],
-                    weaknesses: [
-                        { id: 'w1', text: 'Limited financial resources for marketing and sales.' },
-                        { id: 'w2', text: 'Small team size limits feature development velocity.' },
-                    ],
-                    opportunities: [
-                        { id: 'o1', text: 'Untapped market segment with growing demand.' },
-                        { id: 'o2', text: 'Potential for strategic partnerships with larger companies.' },
-                    ],
-                    threats: [
-                        { id: 't1', text: 'Established competitors with deep pockets.' },
-                        { id: 't2', text: 'Economic downturn affecting funding availability.' },
-                    ],
+                    status: 0,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 },
-                userFeedbacks: [
-                    { id: 'uf1', text: 'Need for faster onboarding and setup process.', priority: 1 },
-                    { id: 'uf2', text: 'Integration with popular startup tools (Slack, Notion, etc.).', priority: 2 },
-                    { id: 'uf3', text: 'Affordable pricing tiers for small teams.', priority: 3 },
-                    { id: 'uf4', text: 'API access for custom integrations.', priority: 4 },
-                    { id: 'uf5', text: 'Responsive customer support for technical issues.', priority: 5 },
-                ]
-            },
-            parsedBacklog: {
-                features: {
-                    increasedRevenue: [
-                        { id: 'fr1', text: 'Implement freemium model with premium feature upgrades.' },
-                        { id: 'fr2', text: 'Create referral program for user acquisition.' },
+                {
+                    id: 'comp2',
+                    name: 'TechFlow',
+                    company: 'TechFlow Solutions',
+                    industry: 'Technology Services',
+                    user_reviews: [
+                        {
+                            positive: [
+                                'Strong community engagement.',
+                                'Innovative approach to problem solving.',
+                                'Good developer experience.'
+                            ],
+                            negative: [
+                                'Limited enterprise features.',
+                                'May not scale for large organizations.',
+                                'Support can be inconsistent.'
+                            ],
+                            site_references: []
+                        }
                     ],
-                    increasedMarketShare: [
-                        { id: 'fms1', text: 'Develop integrations with popular startup tools.' },
-                        { id: 'fms2', text: 'Launch content marketing strategy targeting startup community.' },
+                    status: 0,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                },
+                {
+                    id: 'comp3',
+                    name: 'InnovateLab',
+                    company: 'InnovateLab',
+                    industry: 'Research & Development',
+                    user_reviews: [
+                        {
+                            positive: [
+                                'University partnerships, research focus.',
+                                'Cutting-edge technology implementation.',
+                                'Strong academic backing.'
+                            ],
+                            negative: [
+                                'May lack practical business focus.',
+                                'Limited commercial experience.',
+                                'Research-oriented approach may not suit all businesses.'
+                            ],
+                            site_references: []
+                        }
                     ],
-                    timeToMarket: [
-                        { id: 'fttm1', text: 'Build MVP with core features only.' },
-                        { id: 'fttm2', text: 'Implement automated testing and deployment pipeline.' },
-                    ]
+                    status: 0,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 }
+            ],
+            features: [
+                {
+                    domain: 'User Experience',
+                    sub_domain: 'Onboarding',
+                    feature: 'Implement freemium model with premium feature upgrades.',
+                    version: 'Future',
+                    status: 0
+                },
+                {
+                    domain: 'Marketing',
+                    sub_domain: 'User Acquisition',
+                    feature: 'Create referral program for user acquisition.',
+                    version: 'Future',
+                    status: 0
+                },
+                {
+                    domain: 'Integration',
+                    sub_domain: 'Third Party',
+                    feature: 'Develop integrations with popular startup tools.',
+                    version: 'Next',
+                    status: 0
+                },
+                {
+                    domain: 'Marketing',
+                    sub_domain: 'Content',
+                    feature: 'Launch content marketing strategy targeting startup community.',
+                    version: 'Next',
+                    status: 0
+                },
+                {
+                    domain: 'Development',
+                    sub_domain: 'MVP',
+                    feature: 'Build MVP with core features only.',
+                    version: 'Now',
+                    status: 0
+                },
+                {
+                    domain: 'Development',
+                    sub_domain: 'CI/CD',
+                    feature: 'Implement automated testing and deployment pipeline.',
+                    version: 'Now',
+                    status: 0
+                }
+            ],
+            user_reviews: [
+                {
+                    positive: [
+                        'Need for faster onboarding and setup process.',
+                        'Integration with popular startup tools (Slack, Notion, etc.).',
+                        'Affordable pricing tiers for small teams.',
+                        'API access for custom integrations.',
+                        'Responsive customer support for technical issues.'
+                    ],
+                    negative: [
+                        'Limited enterprise features.',
+                        'May not scale for large organizations.',
+                        'Support can be inconsistent.',
+                        'Lack of advanced security features.',
+                        'Limited customization options.'
+                    ],
+                    site_references: []
+                }
+            ],
+            swot: {
+                strengths: [
+                    'Agile development methodology and rapid prototyping.',
+                    'Strong technical founding team with domain expertise.',
+                    'Fast time-to-market for new features.',
+                    'Innovative approach to problem solving.'
+                ],
+                weaknesses: [
+                    'Limited financial resources for marketing and sales.',
+                    'Small team size limits feature development velocity.',
+                    'May lack enterprise-grade security features.',
+                    'Limited brand recognition.'
+                ],
+                opportunities: [
+                    'Untapped market segment with growing demand.',
+                    'Potential for strategic partnerships with larger companies.',
+                    'Growing startup ecosystem.',
+                    'Increasing demand for agile solutions.'
+                ],
+                threats: [
+                    'Established competitors with deep pockets.',
+                    'Economic downturn affecting funding availability.',
+                    'Larger companies entering the market.',
+                    'Rapid technological changes.'
+                ]
             }
         }
     };
     
     // Consolidated app data with default mock data
     let appData = {
-        // User input data
-        projectName: '',
-        corporateGoals: '',
-        problemStatements: [], // array of strings
+        // User input data - aligned with backend structure
+        name: '', // was projectName
+        goals: [], // was corporateGoals (string) - now array of strings
+        problem_statements: [], // was problemStatements - now matches backend naming
         backlogFile: null, // File object or name string
         backlogUrl: '',
         epics: [],
         
-        // Mock data (default values)
-        marketIntelligence: {
-            specificProblemInsights: [
-                { id: 'sp1', text: 'Users often find competitor X\'s solution too complex in this area.', type: 'problem_statement' },
-                { id: 'sp2', text: 'Addressing this directly could significantly improve user onboarding friction.', type: 'problem_statement' },
-            ],
-            competitorFeatures: [
-                { id: 'cf1', text: 'Competitor A offers advanced AI-driven analytics for {softwarePrompt}.', type: 'competitor' },
-                { id: 'cf2', text: 'Competitor B has a highly-rated mobile-first interface for similar solutions.', type: 'competitor' },
-                { id: 'cf3', text: 'Integration with popular third-party tools is a key feature of Competitor C.', type: 'competitor' },
-            ],
-            userChallenges: [
-                { id: 'uc1', text: 'Users frequently report difficulties with the initial setup process in existing tools for {softwarePrompt}.', type: 'challenge' },
-                { id: 'uc2', text: 'Lack of customizable reporting is a common pain point mentioned in reviews.', type: 'challenge' },
-                { id: 'uc3', text: 'Poor customer support from existing solutions leads to high churn.', type: 'challenge' },
-            ]
-        },
-        companyInsights: {
-            marketShare: '15% (Estimated)',
-            topCompetitors: [
-                { id: 'comp1', name: 'Innovatech Solutions', strength: 'Strong R&D, large patent portfolio.' },
-                { id: 'comp2', name: 'MarketMover Inc.', strength: 'Aggressive marketing, wide distribution network.' },
-                { id: 'comp3', name: 'UserFirst Corp.', strength: 'Excellent customer support, high user retention.' },
-            ],
-            swot: {
-                strengths: [
-                    { id: 's1', text: 'Unique proprietary algorithm for core functionality.' },
-                    { id: 's2', text: 'Experienced cross-functional engineering team.' },
+        // Mock data (default values) - aligned with backend structure
+        competitors: [
+            {
+                id: 'comp1',
+                name: 'Innovatech Solutions',
+                company: 'Innovatech',
+                industry: 'Enterprise Software',
+                user_reviews: [
+                    {
+                        positive: [
+                            'Strong R&D, large patent portfolio.',
+                            'Comprehensive feature set for enterprise needs.',
+                            'Excellent integration capabilities.'
+                        ],
+                        negative: [
+                            'High cost and complex licensing.',
+                            'Steep learning curve for new users.',
+                            'Implementation can be lengthy and expensive.'
+                        ],
+                        site_references: []
+                    }
                 ],
-                weaknesses: [
-                    { id: 'w1', text: 'Limited brand recognition in new target markets.' },
-                    { id: 'w2', text: 'Current infrastructure may not scale easily for 10x growth.' },
-                ],
-                opportunities: [
-                    { id: 'o1', text: 'Growing demand for AI-driven automation in the specified sector.' },
-                    { id: 'o2', text: 'Potential strategic partnerships with complementary service providers.' },
-                ],
-                threats: [
-                    { id: 't1', text: 'Rapid technological advancements by key competitors.' },
-                    { id: 't2', text: 'Potential for new data privacy regulatory hurdles.' },
-                ],
+                status: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             },
-            userFeedbacks: [
-                { id: 'uf1', text: 'The onboarding process is too complicated and time-consuming for new users.', priority: 1 },
-                { id: 'uf2', text: 'Lack of integration with our existing primary CRM (e.g., Salesforce).', priority: 2 },
-                { id: 'uf3', text: 'Reporting features are not customizable enough for our specific business needs.', priority: 3 },
-                { id: 'uf4', text: 'The mobile application experience is clunky and significantly slower than desktop.', priority: 4 },
-                { id: 'uf5', text: 'Customer support response times are inconsistent, especially for urgent issues.', priority: 5 },
-            ]
-        },
-        parsedBacklog: {
-            features: {
-                increasedRevenue: [
-                    { id: 'fr1', text: 'Develop and implement a premium subscription tier offering advanced analytics and priority support.' },
-                    { id: 'fr2', text: 'Introduce an affiliate marketing program to incentivize referrals and expand reach.' },
+            {
+                id: 'comp2',
+                name: 'MarketMover Inc.',
+                company: 'MarketMover',
+                industry: 'Business Solutions',
+                user_reviews: [
+                    {
+                        positive: [
+                            'Aggressive marketing, wide distribution network.',
+                            'Competitive pricing for mid-market.',
+                            'Good customer support.'
+                        ],
+                        negative: [
+                            'Feature set may be limited for enterprise.',
+                            'Integration challenges with legacy systems.',
+                            'Reporting capabilities could be improved.'
+                        ],
+                        site_references: []
+                    }
                 ],
-                increasedMarketShare: [
-                    { id: 'fms1', text: 'Launch a targeted digital marketing campaign focusing on small to medium-sized businesses (SMBs).' },
-                    { id: 'fms2', text: 'Expand language support to include Spanish and German to cater to European markets.' },
+                status: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            },
+            {
+                id: 'comp3',
+                name: 'UserFirst Corp.',
+                company: 'UserFirst',
+                industry: 'User Experience Solutions',
+                user_reviews: [
+                    {
+                        positive: [
+                            'Excellent customer support, high user retention.',
+                            'Intuitive user interface design.',
+                            'Strong focus on user experience.'
+                        ],
+                        negative: [
+                            'Limited advanced features for power users.',
+                            'May not scale well for large enterprises.',
+                            'Customization options are limited.'
+                        ],
+                        site_references: []
+                    }
                 ],
-                timeToMarket: [
-                    { id: 'fttm1', text: 'Refactor the legacy user authentication module to improve development velocity for new features.' },
-                    { id: 'fttm2', text: 'Adopt a comprehensive CI/CD pipeline for automated testing and deployments.' },
-                ]
+                status: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             }
+        ],
+        features: [
+            {
+                domain: 'User Experience',
+                sub_domain: 'Onboarding',
+                feature: 'Implement an AI-driven configuration wizard that simplifies the setup process, using natural language processing to understand user requirements and configure the system accordingly.',
+                version: 'Future',
+                status: 0
+            },
+            {
+                domain: 'Backend',
+                sub_domain: 'Analytics & Reporting',
+                feature: 'Develop an innovative suite of LLM (Large Language Models) and Agent Technology for predictive analytics, offering insights into trends and predictive needs.',
+                version: 'Now',
+                status: 0
+            },
+            {
+                domain: 'Business Model',
+                sub_domain: 'Pricing Strategy',
+                feature: 'Introduce a modular pricing strategy that allows smaller organizations to select and pay for only the features they need, reducing the overall cost barrier.',
+                version: 'Future',
+                status: 0
+            },
+            {
+                domain: 'User Interface',
+                sub_domain: 'Reporting',
+                feature: 'Create a more intuitive and guided reporting tool that allows users with no technical background to easily build and modify reports through a drag-and-drop interface and natural language queries.',
+                version: 'Future',
+                status: 0
+            },
+            {
+                domain: 'API',
+                sub_domain: 'Integration',
+                feature: 'Launch an integration hub that simplifies the process of connecting with third-party systems, offering pre-built connectors, simplified APIs, and an integration support team to assist customers.',
+                version: 'Next',
+                status: 0
+            }
+        ],
+        user_reviews: [
+            {
+                positive: [
+                    'The onboarding process is too complicated and time-consuming for new users.',
+                    'Lack of integration with our existing primary CRM (e.g., Salesforce).',
+                    'Reporting features are not customizable enough for our specific business needs.',
+                    'The mobile application experience is clunky and significantly slower than desktop.',
+                    'Customer support response times are inconsistent, especially for urgent issues.'
+                ],
+                negative: [
+                    'High cost, especially for smaller organizations.',
+                    'Complex and lengthy implementation process.',
+                    'Configuration and customization can be challenging.',
+                    'Reporting can be difficult for average users to build/modify.',
+                    'Integration challenges with some third-party systems.'
+                ],
+                site_references: []
+            }
+        ],
+        swot: {
+            strengths: [
+                'Unique proprietary algorithm for core functionality.',
+                'Experienced cross-functional engineering team.',
+                'Strong market position and brand recognition.',
+                'Comprehensive suite of integrated applications.',
+                'History of innovation, particularly in cloud-based solutions.'
+            ],
+            weaknesses: [
+                'Limited brand recognition in new target markets.',
+                'Current infrastructure may not scale easily for 10x growth.',
+                'High cost and potentially complex pricing/licensing.',
+                'Complexity in implementation, configuration, and ongoing management.',
+                'Steep learning curve and potential challenges with user adoption.'
+            ],
+            opportunities: [
+                'Growing demand for AI-driven automation in the specified sector.',
+                'Potential strategic partnerships with complementary service providers.',
+                'Increasing demand for AI and automation features.',
+                'Need for integrated business processes and data across functions.',
+                'Ongoing digital transformation initiatives within businesses.'
+            ],
+            threats: [
+                'Rapid technological advancements by key competitors.',
+                'Potential for new data privacy regulatory hurdles.',
+                'Intense competition from established players and agile challengers.',
+                'Availability of more affordable or value-focused solutions.',
+                'Increasing concerns around data privacy, security, and compliance.'
+            ]
         },
         
-        // Legacy properties for backward compatibility
+        // Legacy properties for backward compatibility - will be removed after migration
         companyInsightsData: null, // Will be set to appData.companyInsights when needed
         parsedBacklogData: null, // Will be set to appData.parsedBacklog when needed
+        marketIntelligence: null, // Legacy - will be removed
+        companyInsights: null, // Legacy - will be removed
+        parsedBacklog: null, // Legacy - will be removed
     };
 
     // Mock data management functions
@@ -168,9 +364,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (alternativeDataSets[dataSetName]) {
             // Update appData with the alternative data set
             const newData = alternativeDataSets[dataSetName];
-            appData.marketIntelligence = newData.marketIntelligence;
-            appData.companyInsights = newData.companyInsights;
-            appData.parsedBacklog = newData.parsedBacklog;
+            appData.competitors = newData.competitors;
+            appData.features = newData.features;
+            appData.user_reviews = newData.user_reviews;
+            appData.swot = newData.swot;
             
             // Update legacy properties for backward compatibility
             syncLegacyProperties();
@@ -187,32 +384,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function syncLegacyProperties() {
         // Keep legacy properties in sync with new structure
-        appData.companyInsightsData = appData.companyInsights;
-        appData.parsedBacklogData = appData.parsedBacklog;
+        // Create legacy companyInsights structure from new data
+        appData.companyInsightsData = {
+            marketShare: '15% (Estimated)',
+            topCompetitors: appData.competitors.map(comp => ({
+                id: comp.id,
+                name: comp.name,
+                strength: comp.user_reviews[0]?.positive[0] || 'Strong competitor'
+            })),
+            swot: appData.swot,
+            userFeedbacks: appData.user_reviews[0]?.positive.map((feedback, index) => ({
+                id: `uf${index + 1}`,
+                text: feedback,
+                priority: index + 1
+            })) || []
+        };
+        
+        // Create legacy parsedBacklog structure from new features
+        appData.parsedBacklogData = {
+            features: {
+                increasedRevenue: appData.features.filter(f => f.domain === 'Business Model' || f.domain === 'Marketing').map((f, index) => ({
+                    id: `fr${index + 1}`,
+                    text: f.feature
+                })),
+                increasedMarketShare: appData.features.filter(f => f.domain === 'Marketing' || f.domain === 'Integration').map((f, index) => ({
+                    id: `fms${index + 1}`,
+                    text: f.feature
+                })),
+                timeToMarket: appData.features.filter(f => f.domain === 'Development' || f.domain === 'User Experience').map((f, index) => ({
+                    id: `fttm${index + 1}`,
+                    text: f.feature
+                }))
+            }
+        };
+        
+        // Set legacy properties for backward compatibility
+        appData.companyInsights = appData.companyInsightsData;
+        appData.parsedBacklog = appData.parsedBacklogData;
     }
 
     function getMockData(dataType) {
         // Check if we should auto-switch based on project name
-        if (appData.projectName && appData.projectName.toLowerCase().includes('startup') && 
-            appData.companyInsights.marketShare === '15% (Estimated)') {
+        if (appData.name && appData.name.toLowerCase().includes('startup')) {
             // Auto-switch to startup data if not already switched
-            switchMockData('startup');
+            const currentCompetitors = appData.competitors[0]?.name;
+            if (currentCompetitors !== 'StartupX') {
+                switchMockData('startup');
+            }
         }
         
         console.log(`Getting mock data for: ${dataType}`);
         
-        const mockData = appData[dataType];
-        
-        // Replace placeholders with actual values from appData
-        if (dataType === 'marketIntelligence' && appData.problemStatements && appData.problemStatements.length > 0) {
-            const problemStatement = appData.problemStatements[0];
-            mockData.specificProblemInsights = mockData.specificProblemInsights.map(insight => ({
-                ...insight,
-                text: insight.text.replace('this area', `"${problemStatement}"`)
-            }));
+        // Return data based on the new structure
+        if (dataType === 'competitors') {
+            return appData.competitors;
+        } else if (dataType === 'features') {
+            return appData.features;
+        } else if (dataType === 'user_reviews') {
+            return appData.user_reviews;
+        } else if (dataType === 'swot') {
+            return appData.swot;
+        } else if (dataType === 'parsedBacklog') {
+            // Return the parsedBacklogData structure
+            return appData.parsedBacklogData || {
+                features: {
+                    increasedRevenue: [],
+                    increasedMarketShare: [],
+                    timeToMarket: []
+                }
+            };
+        } else {
+            // For legacy compatibility, return the appropriate data
+            const mockData = appData[dataType];
+            
+            // Replace placeholders with actual values from appData
+            if (dataType === 'marketIntelligence' && appData.problem_statements && appData.problem_statements.length > 0) {
+                const problemStatement = appData.problem_statements[0];
+                mockData.specificProblemInsights = mockData.specificProblemInsights.map(insight => ({
+                    ...insight,
+                    text: insight.text.replace('this area', `"${problemStatement}"`)
+                }));
+            }
+            
+            return mockData;
         }
-        
-        return mockData;
     }
 
     function init() {
@@ -301,10 +556,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let furthest = currentStepIndex;
         // Simplified: allow navigation to any non-future step that has been "unlocked" by completing previous ones.
         // More granular control:
-        if (appData.projectName) furthest = Math.max(furthest, 1); // Can go to Prep-Insights if Goals is done
-        if (appData.projectName) furthest = Math.max(furthest, 2); // Can go to Company Insights if Goals is done (Prep is optional)
-        if (appData.companyInsightsData) furthest = Math.max(furthest, 3); // Can go to Backlog Parser if Insights are loaded
-        if (appData.companyInsightsData) furthest = Math.max(furthest, 4); // Can go to Epics if Insights are loaded
+        if (appData.name) furthest = Math.max(furthest, 1); // Can go to Prep-Insights if Goals is done
+        if (appData.name) furthest = Math.max(furthest, 2); // Can go to Company Insights if Goals is done (Prep is optional)
+        if (appData.competitors && appData.competitors.length > 0) furthest = Math.max(furthest, 3); // Can go to Backlog Parser if Insights are loaded
+        if (appData.competitors && appData.competitors.length > 0) furthest = Math.max(furthest, 4); // Can go to Epics if Insights are loaded
         // Add more conditions for future steps if needed
 
         return furthest;
@@ -357,9 +612,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stepData.id === 'company-insights' && !appData.companyInsightsData) {
             dynamicContentContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading company and market insights...</p></div>`;
             try {
-                appData.companyInsightsData = await fetchCompanyInsights(appData.projectName);
+                appData.companyInsightsData = await fetchCompanyInsights(appData.name);
                 // Sync the new data back to the consolidated structure
-                appData.companyInsights = appData.companyInsightsData;
+                syncLegacyProperties();
                 dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData); // Re-render with data
             } catch (error) {
                 console.error("Error fetching company insights:", error);
@@ -408,14 +663,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 projectNameInput.focus();
                 return false;
             }
-            appData.projectName = projectNameInput.value.trim();
-            appData.corporateGoals = corporateGoalsInput.value.trim();
+            appData.name = projectNameInput.value.trim();
+            // Convert comma-separated goals to array
+            appData.goals = corporateGoalsInput.value.trim().split(',').map(goal => goal.trim()).filter(goal => goal.length > 0);
             
             // Initialize to ensure a fresh list from DOM, preventing duplicates on save
-            appData.problemStatements = [];
+            appData.problem_statements = [];
             document.querySelectorAll('.problem-statement-input').forEach(input => {
                 if (input.value.trim()) {
-                    appData.problemStatements.push(input.value.trim()); // Add only non-empty, trimmed values
+                    appData.problem_statements.push(input.value.trim()); // Add only non-empty, trimmed values
                 }
             });
             return true;
@@ -437,23 +693,34 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save editable fields
             appData.companyInsightsData.marketShare = document.getElementById('market-share')?.value || appData.companyInsightsData.marketShare;
             document.querySelectorAll('.editable-insight').forEach(input => {
-                const path = input.dataset.path.split('.'); // e.g., "swot.strengths.s1.text" or "topCompetitors.comp1.strength"
-                let obj = appData.companyInsightsData;
+                const path = input.dataset.path.split('.'); // e.g., "competitors.comp1.user_reviews.0.positive.0" or "swot.strengths.0"
+                let obj = appData;
                 try {
-                    if (path[0] === 'topCompetitors') { // e.g. topCompetitors.comp1.strength
-                        const comp = obj.topCompetitors.find(c => c.id === path[1]);
-                        if(comp) comp[path[2]] = input.value;
-                    } else if (path[0] === 'swot') { // e.g. swot.strengths.s1.text
-                        const swotItem = obj.swot[path[1]].find(item => item.id === path[2]);
-                        if(swotItem) swotItem[path[3]] = input.value;
-                    } else if (path[0] === 'userFeedbacks') { // e.g. userFeedbacks.uf1.text
-                         const feedbackItem = obj.userFeedbacks.find(item => item.id === path[1]);
-                        if(feedbackItem) feedbackItem[path[2]] = input.value;
+                    if (path[0] === 'competitors') { // e.g. competitors.comp1.user_reviews.0.positive.0
+                        const comp = obj.competitors.find(c => c.id === path[1]);
+                        if(comp) {
+                            if (path[2] === 'user_reviews' && path[3] === '0' && path[4] === 'positive') {
+                                const index = parseInt(path[5]);
+                                if (comp.user_reviews[0] && comp.user_reviews[0].positive) {
+                                    comp.user_reviews[0].positive[index] = input.value;
+                                }
+                            }
+                        }
+                    } else if (path[0] === 'swot') { // e.g. swot.strengths.0
+                        const index = parseInt(path[2]);
+                        if (obj.swot[path[1]] && obj.swot[path[1]][index] !== undefined) {
+                            obj.swot[path[1]][index] = input.value;
+                        }
+                    } else if (path[0] === 'user_reviews') { // e.g. user_reviews.0.positive.0
+                        const index = parseInt(path[3]);
+                        if (obj.user_reviews[0] && obj.user_reviews[0].positive) {
+                            obj.user_reviews[0].positive[index] = input.value;
+                        }
                     }
                 } catch (e) { console.warn("Could not save insight field:", path.join('.'), e); }
             });
             // Sync changes back to consolidated structure
-            appData.companyInsights = appData.companyInsightsData;
+            syncLegacyProperties();
             return true;
         }
         if (stepData.id === 'backlog-parser') {
@@ -468,15 +735,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             appData.backlogUrl = backlogUrlInput.value.trim();
 
-            if (appData.parsedBacklogData && appData.parsedBacklogData.features) {
+            if (appData.features) {
                  document.querySelectorAll('.editable-feature').forEach(input => {
-                    const category = input.dataset.category;
-                    const id = input.dataset.id;
-                    const feature = appData.parsedBacklogData.features[category]?.find(f => f.id === id);
-                    if (feature) feature.text = input.value;
+                    const domain = input.dataset.domain;
+                    const subDomain = input.dataset.sub_domain;
+                    const version = input.dataset.version;
+                    const feature = appData.features.find(f => f.domain === domain && f.sub_domain === subDomain && f.version === version);
+                    if (feature) feature.feature = input.value;
                 });
                 // Sync changes back to consolidated structure
-                appData.parsedBacklog = appData.parsedBacklogData;
+                syncLegacyProperties();
             }
             return true;
         }
@@ -537,17 +805,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Save all current values to appData
                         if (projectNameInput) {
-                            appData.projectName = projectNameInput.value.trim();
+                            appData.name = projectNameInput.value.trim();
                         }
                         if (corporateGoalsInput) {
-                            appData.corporateGoals = corporateGoalsInput.value.trim();
+                            appData.goals = corporateGoalsInput.value.trim().split(',').map(goal => goal.trim()).filter(goal => goal.length > 0);
                         }
                         
                         const currentStatements = Array.from(problemInputs).map(input => input.value.trim());
-                        appData.problemStatements = currentStatements.filter(statement => statement.length > 0);
+                        appData.problem_statements = currentStatements.filter(statement => statement.length > 0);
 
                         // 2. Add a new empty problem statement to the array for the new input field
-                        appData.problemStatements.push(''); 
+                        appData.problem_statements.push(''); 
                         
                         // 3. Re-render the content based on the updated appData
                         dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
@@ -570,18 +838,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Save all current values to appData
                         if (projectNameInput) {
-                            appData.projectName = projectNameInput.value.trim();
+                            appData.name = projectNameInput.value.trim();
                         }
                         if (corporateGoalsInput) {
-                            appData.corporateGoals = corporateGoalsInput.value.trim();
+                            appData.goals = corporateGoalsInput.value.trim().split(',').map(goal => goal.trim()).filter(goal => goal.length > 0);
                         }
                         
                         const currentStatements = Array.from(problemInputs).map(input => input.value.trim());
-                        appData.problemStatements = currentStatements.filter(statement => statement.length > 0);
+                        appData.problem_statements = currentStatements.filter(statement => statement.length > 0);
 
                         // 2. Remove the specified problem statement
-                        if (idxToRemove >= 0 && idxToRemove < appData.problemStatements.length) {
-                            appData.problemStatements.splice(idxToRemove, 1);
+                        if (idxToRemove >= 0 && idxToRemove < appData.problem_statements.length) {
+                            appData.problem_statements.splice(idxToRemove, 1);
                         }
                         
                         // 3. Re-render
@@ -621,18 +889,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseBtn.addEventListener('click', async () => {
                     loader.classList.remove('hidden');
                     parseBtn.disabled = true;
+                    
+                    // Clear any previous error messages
+                    const existingError = dynamicContentContainer.querySelector('.error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                    
                     try {
                         // Ensure latest backlogFile/URL is saved to appData before fetching
                         validateAndSaveStep(index); // This saves backlog-file-parser and backlog-url-parser
-                        appData.parsedBacklogData = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.companyInsightsData?.userFeedbacks);
+                        appData.parsedBacklogData = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.user_reviews?.[0]?.positive);
                         // Sync the new data back to the consolidated structure
-                        appData.parsedBacklog = appData.parsedBacklogData;
+                        syncLegacyProperties();
                         // Re-render the dynamic content of this step to show parsed data
                         dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
                         attachStepEventListeners(index); // Re-attach listeners for new content
                     } catch (error) {
                         console.error("Error parsing backlog:", error);
-                        dynamicContentContainer.innerHTML += '<p class="error">Failed to parse backlog. Please try again.</p>';
+                        // Add error message at the top of the content, not append
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error';
+                        errorDiv.innerHTML = '<p>Failed to parse backlog. Please try again.</p>';
+                        dynamicContentContainer.insertBefore(errorDiv, dynamicContentContainer.firstChild);
                     } finally {
                         loader.classList.add('hidden');
                         parseBtn.disabled = false;

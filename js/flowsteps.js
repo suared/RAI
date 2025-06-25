@@ -85,7 +85,7 @@ const flowSteps = [
 // Step 1: Goals
 function generateGoalsHTML(stepData, appData) {
     let problemStatementsHTML = '<ul id="problem-statements-list">';
-    (appData.problemStatements || []).forEach((ps, index) => {
+    (appData.problem_statements || []).forEach((ps, index) => {
         problemStatementsHTML += `
             <li>
                 <input type="text" class="problem-statement-input" value="${ps}" data-index="${index}" placeholder="Enter problem statement">
@@ -94,14 +94,17 @@ function generateGoalsHTML(stepData, appData) {
     });
     problemStatementsHTML += '</ul>';
 
+    // Convert goals array to string for display
+    const goalsText = (appData.goals || []).join(', ');
+
     return `
         <div>
             <label for="project-name">Project Name:</label>
-            <input type="text" id="project-name" placeholder="e.g., 'NextGen CRM Platform'" value="${appData.projectName || ''}" required>
+            <input type="text" id="project-name" placeholder="e.g., 'NextGen CRM Platform'" value="${appData.name || ''}" required>
         </div>
         <div>
             <label for="corporate-goals">Corporate Goals (Optional):</label>
-            <textarea id="corporate-goals" placeholder="e.g., 'Increase market share by 10% in Q4, Improve customer retention by 15%.'">${appData.corporateGoals || ''}</textarea>
+            <textarea id="corporate-goals" placeholder="e.g., 'Increase market share by 10% in Q4, Improve customer retention by 15%.'">${goalsText}</textarea>
         </div>
         <div>
             <label>Problem Statements (Optional, 1 or many):</label>
@@ -136,31 +139,44 @@ function generateCompanyInsightsHTML(stepData, appData) {
     if (!appData.companyInsightsData) {
         return `<div class="loader-container"><div class="loader"></div><p>Loading company and market insights...</p></div>`;
     }
-    const { reportLink, marketShare, topCompetitors, swot, userFeedbacks } = appData.companyInsightsData;
+    
+    // Use the new data structure directly
+    const { competitors, swot, user_reviews } = appData;
+    const marketShare = appData.companyInsightsData?.marketShare || '15% (Estimated)';
 
-    let competitorsHTML = topCompetitors.map(c => `<li><strong>${c.name}:</strong> <input type="text" class="editable-insight" data-path="topCompetitors.${c.id}.strength" value="${c.strength}"></li>`).join('');
+    let competitorsHTML = competitors.map(c => {
+        const strength = c.user_reviews[0]?.positive[0] || 'Strong competitor';
+        return `<li><strong>${c.name} (${c.company}):</strong> <input type="text" class="editable-insight" data-path="competitors.${c.id}.user_reviews.0.positive.0" value="${strength}"></li>`;
+    }).join('');
     
     const generateSwotHTML = (type, items) => {
         let html = `<h4>${type.charAt(0).toUpperCase() + type.slice(1)}</h4><ul>`;
-        items.forEach(item => {
-            html += `<li><textarea class="editable-insight swot-item" data-path="swot.${type}.${item.id}.text">${item.text}</textarea></li>`; // Simplified ID for saving
+        items.forEach((item, index) => {
+            html += `<li><textarea class="editable-insight swot-item" data-path="swot.${type}.${index}">${item}</textarea></li>`;
         });
-        html += `</ul>`; // Add button for new items would go here in a full app
+        html += `</ul>`;
         return html;
     };
 
-    let userFeedbacksHTML = userFeedbacks.map(fb => `<li><input type="text" class="editable-insight" data-path="userFeedbacks.${fb.id}.text" value="${fb.text}"> (Priority: ${fb.priority})</li>`).join('');
+    // Convert user_reviews to the format expected by the UI
+    const userFeedbacks = user_reviews[0]?.positive.map((feedback, index) => ({
+        id: `uf${index + 1}`,
+        text: feedback,
+        priority: index + 1
+    })) || [];
+
+    let userFeedbacksHTML = userFeedbacks.map(fb => `<li><input type="text" class="editable-insight" data-path="user_reviews.0.positive.${fb.priority - 1}" value="${fb.text}"> (Priority: ${fb.priority})</li>`).join('');
 
     return `
         <div class="report-link-container">
-            <i class="fas fa-file-alt"></i> Gemini Insights Report: <a href="${reportLink}" target="_blank" onclick="event.preventDefault(); alert('This is a dummy link to: ${reportLink}');">View Full Report (Simulated)</a>
+            <i class="fas fa-file-alt"></i> Gemini Insights Report: <a href="#" target="_blank" onclick="event.preventDefault(); alert('This is a dummy link to: Gemini Insights Report');">View Full Report (Simulated)</a>
         </div>
         <div>
             <label for="market-share">Estimated Market Share:</label>
             <input type="text" id="market-share" class="editable-insight" data-path="marketShare" value="${marketShare}">
         </div>
         <div class="competitors-section">
-            <h3>Top 3 Competitors & Strengths:</h3>
+            <h3>Top ${competitors.length} Competitors & Strengths:</h3>
             <ul>${competitorsHTML}</ul>
         </div>
         <div class="swot-analysis">
@@ -173,7 +189,7 @@ function generateCompanyInsightsHTML(stepData, appData) {
             </div>
         </div>
         <div class="user-feedback-section">
-            <h3>Top 5 User Feedbacks (Priority Order):</h3>
+            <h3>Top ${userFeedbacks.length} User Feedbacks (Priority Order):</h3>
             <ul>${userFeedbacksHTML}</ul>
         </div>
     `;
@@ -182,18 +198,27 @@ function generateCompanyInsightsHTML(stepData, appData) {
 // Step 4: Backlog Parser
 function generateBacklogParserHTML(stepData, appData) {
     let featuresHTML = '';
-    if (appData.parsedBacklogData && appData.parsedBacklogData.features) {
-        const { increasedRevenue, increasedMarketShare, timeToMarket } = appData.parsedBacklogData.features;
+    if (appData.features && appData.features.length > 0) {
+        // Group features by domain for display
+        const featuresByDomain = {};
+        appData.features.forEach(f => {
+            if (!featuresByDomain[f.domain]) {
+                featuresByDomain[f.domain] = [];
+            }
+            featuresByDomain[f.domain].push(f);
+        });
+
         featuresHTML = `
             <div id="features-section">
-                <h3>Features</h3>
-                <h4>Increased Revenue</h4>
-                <ul>${(increasedRevenue || []).map(f => `<li><input type="text" class="editable-feature" data-category="increasedRevenue" data-id="${f.id}" value="${f.text}"></li>`).join('')}</ul>
-                <h4>Increased Market Share</h4>
-                <ul>${(increasedMarketShare || []).map(f => `<li><input type="text" class="editable-feature" data-category="increasedMarketShare" data-id="${f.id}" value="${f.text}"></li>`).join('')}</ul>
-                <h4>Time to Market</h4>
-                <ul>${(timeToMarket || []).map(f => `<li><input type="text" class="editable-feature" data-category="timeToMarket" data-id="${f.id}" value="${f.text}"></li>`).join('')}</ul>
-            </div>`;
+                <h3>Features by Domain</h3>`;
+        
+        Object.entries(featuresByDomain).forEach(([domain, features]) => {
+            featuresHTML += `
+                <h4>${domain}</h4>
+                <ul>${features.map(f => `<li><input type="text" class="editable-feature" data-domain="${f.domain}" data-sub-domain="${f.sub_domain}" data-version="${f.version}" value="${f.feature}"> <span class="feature-meta">(${f.sub_domain} - ${f.version})</span></li>`).join('')}</ul>`;
+        });
+        
+        featuresHTML += `</div>`;
     }
 
     let feedbackCoverageHTML = '';
@@ -232,10 +257,10 @@ function generateBacklogParserHTML(stepData, appData) {
 // Step 5: Define Epics (Updated to reflect new appData structure if needed)
 function generateDefineEpicsHTML(stepData, appData) {
     let guidanceHTML = '';
-    if (appData.companyInsightsData && appData.companyInsightsData.userFeedbacks && appData.companyInsightsData.userFeedbacks.length > 0) {
+    if (appData.user_reviews && appData.user_reviews[0] && appData.user_reviews[0].positive && appData.user_reviews[0].positive.length > 0) {
         guidanceHTML += '<h3>Key User Feedback to Consider:</h3><ul class="selected-findings-list">';
-        appData.companyInsightsData.userFeedbacks.forEach(finding => {
-            guidanceHTML += `<li><i class="fas fa-lightbulb" style="color: orange; margin-right: 5px;"></i>${finding.text}</li>`;
+        appData.user_reviews[0].positive.forEach((finding, index) => {
+            guidanceHTML += `<li><i class="fas fa-lightbulb" style="color: orange; margin-right: 5px;"></i>${finding}</li>`;
         });
         guidanceHTML += '</ul>';
     } else {

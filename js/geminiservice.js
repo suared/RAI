@@ -54,18 +54,19 @@ async function fetchParsedBacklog(backlogFile, backlogUrl, userFeedbacks = []) {
     // Get mock data from the app's data management system
     const mockData = window.getMockData('parsedBacklog');
 
+    // Handle userFeedbacks as array of strings (not objects)
     const feedbackCoverage = {
-        notCovered: userFeedbacks.filter((fb, i) => i % 2 !== 0).map(fb => ({ 
-            id: `fnc_${fb.id}`, 
-            feedbackId: fb.id, 
-            feedbackText: fb.text, 
+        notCovered: userFeedbacks.filter((fb, i) => i % 2 !== 0).map((fb, index) => ({ 
+            id: `fnc_${index}`, 
+            feedbackId: `feedback_${index}`, 
+            feedbackText: fb, 
             reason: 'No specific feature in current backlog directly addresses this.' 
         })),
-        covered: userFeedbacks.filter((fb, i) => i % 2 === 0).map(fb => ({ 
-            id: `fc_${fb.id}`, 
-            feedbackId: fb.id, 
-            feedbackText: fb.text, 
-            relatedFeature: `Mock Feature for: ${fb.text.substring(0,30)}...` 
+        covered: userFeedbacks.filter((fb, i) => i % 2 === 0).map((fb, index) => ({ 
+            id: `fc_${index}`, 
+            feedbackId: `feedback_${index}`, 
+            feedbackText: fb, 
+            relatedFeature: `Mock Feature for: ${fb.substring(0,30)}...` 
         })),
     };
     
