@@ -5,23 +5,18 @@
 
 async function fetchMarketIntelligence(softwarePrompt, problemStatement = '') {
     console.log("Simulating Gemini API call for:", softwarePrompt, "Specific Problem:", problemStatement);
-    // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Get mock data from the app's data management system
-    const mockData = window.getMockData('marketIntelligence');
-    
-    // Replace placeholders with actual values
+    // Use new competitors array fields
+    const competitors = window.getMockData('competitors');
+    const allProblems = competitors.flatMap(c => c.problems || []);
+    const allFeatures = competitors.flatMap(c => c.features || []);
+    const specificProblemInsights = competitors.flatMap(c => c.user_reviews?.[0]?.positive || []);
+
     const processedData = {
-        specificProblemInsights: problemStatement ? mockData.specificProblemInsights : [],
-        competitorFeatures: mockData.competitorFeatures.map(f => ({
-            ...f,
-            text: f.text.replace('{softwarePrompt}', softwarePrompt)
-        })),
-        userChallenges: mockData.userChallenges.map(c => ({
-            ...c,
-            text: c.text.replace('{softwarePrompt}', softwarePrompt)
-        }))
+        specificProblemInsights,
+        competitorFeatures: allFeatures.map(f => ({ text: f })),
+        userChallenges: allProblems.map(p => ({ text: p }))
     };
 
     return {

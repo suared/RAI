@@ -182,20 +182,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Consolidated app data with default mock data
     let appData = {
         // User input data - aligned with backend structure
-        name: '', // was projectName
-        goals: [], // was corporateGoals (string) - now array of strings
-        problem_statements: [], // was problemStatements - now matches backend naming
-        backlogFile: null, // File object or name string
+        name: '',
+        goals: [],
+        problem_statements: [],
+        backlogFile: null,
         backlogUrl: '',
         epics: [],
-        
-        // Mock data (default values) - aligned with backend structure
+        marketShare: '15% (Estimated)',
         competitors: [
             {
                 id: 'comp1',
                 name: 'Innovatech Solutions',
                 company: 'Innovatech',
                 industry: 'Enterprise Software',
+                marketShare: '10%',
+                problems: [
+                    'Problem 1 for Innovatech',
+                    'Problem 2 for Innovatech'
+                ],
+                features: [
+                    'Feature 1 for Innovatech',
+                    'Feature 2 for Innovatech'
+                ],
                 user_reviews: [
                     {
                         positive: [
@@ -349,14 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Availability of more affordable or value-focused solutions.',
                 'Increasing concerns around data privacy, security, and compliance.'
             ]
-        },
-        
-        // Legacy properties for backward compatibility - will be removed after migration
-        companyInsightsData: null, // Will be set to appData.companyInsights when needed
-        parsedBacklogData: null, // Will be set to appData.parsedBacklog when needed
-        marketIntelligence: null, // Legacy - will be removed
-        companyInsights: null, // Legacy - will be removed
-        parsedBacklog: null, // Legacy - will be removed
+        }
     };
 
     // Mock data management functions
@@ -369,9 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
             appData.user_reviews = newData.user_reviews;
             appData.swot = newData.swot;
             
-            // Update legacy properties for backward compatibility
-            syncLegacyProperties();
-            
             console.log(`Mock data switched to: ${dataSetName}`);
         } else {
             console.warn(`Data set "${dataSetName}" not found. Available sets:`, Object.keys(alternativeDataSets));
@@ -380,47 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getAvailableDataSets() {
         return ['default', ...Object.keys(alternativeDataSets)];
-    }
-
-    function syncLegacyProperties() {
-        // Keep legacy properties in sync with new structure
-        // Create legacy companyInsights structure from new data
-        appData.companyInsightsData = {
-            marketShare: '15% (Estimated)',
-            topCompetitors: appData.competitors.map(comp => ({
-                id: comp.id,
-                name: comp.name,
-                strength: comp.user_reviews[0]?.positive[0] || 'Strong competitor'
-            })),
-            swot: appData.swot,
-            userFeedbacks: appData.user_reviews[0]?.positive.map((feedback, index) => ({
-                id: `uf${index + 1}`,
-                text: feedback,
-                priority: index + 1
-            })) || []
-        };
-        
-        // Create legacy parsedBacklog structure from new features
-        appData.parsedBacklogData = {
-            features: {
-                increasedRevenue: appData.features.filter(f => f.domain === 'Business Model' || f.domain === 'Marketing').map((f, index) => ({
-                    id: `fr${index + 1}`,
-                    text: f.feature
-                })),
-                increasedMarketShare: appData.features.filter(f => f.domain === 'Marketing' || f.domain === 'Integration').map((f, index) => ({
-                    id: `fms${index + 1}`,
-                    text: f.feature
-                })),
-                timeToMarket: appData.features.filter(f => f.domain === 'Development' || f.domain === 'User Experience').map((f, index) => ({
-                    id: `fttm${index + 1}`,
-                    text: f.feature
-                }))
-            }
-        };
-        
-        // Set legacy properties for backward compatibility
-        appData.companyInsights = appData.companyInsightsData;
-        appData.parsedBacklog = appData.parsedBacklogData;
     }
 
     function getMockData(dataType) {
@@ -445,20 +402,17 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (dataType === 'swot') {
             return appData.swot;
         } else if (dataType === 'parsedBacklog') {
-            // Return the parsedBacklogData structure
-            return appData.parsedBacklogData || {
-                features: {
-                    increasedRevenue: [],
-                    increasedMarketShare: [],
-                    timeToMarket: []
-                }
+            // Always return an object with features and feedbackCoverage fields
+            return {
+                features: appData.features || [],
+                feedbackCoverage: appData.feedbackCoverage || { notCovered: [], covered: [] }
             };
         } else {
             // For legacy compatibility, return the appropriate data
             const mockData = appData[dataType];
             
             // Replace placeholders with actual values from appData
-            if (dataType === 'marketIntelligence' && appData.problem_statements && appData.problem_statements.length > 0) {
+            if (dataType === 'marketShare' && appData.problem_statements && appData.problem_statements.length > 0) {
                 const problemStatement = appData.problem_statements[0];
                 mockData.specificProblemInsights = mockData.specificProblemInsights.map(insight => ({
                     ...insight,
@@ -473,9 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function init() {
         // Placeholder for App Logo
         appLogo.src = generateAbstractLogo(); // Simple generated logo
-
-        // Initialize legacy properties
-        syncLegacyProperties();
 
         renderStepper();
         // Initially, show hero, hide steps
@@ -574,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function renderStepContent(index) { // Made async for potential data loading
+    async function renderStepContent(index) {
         const stepData = flowSteps[index];
         stepContentWrapper.innerHTML = `
             <div class="step-hero" style="background-image: url('${stepData.heroImage}');">
@@ -609,20 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dynamicContentContainer = document.getElementById('dynamic-step-content');
         
-        if (stepData.id === 'company-insights' && !appData.companyInsightsData) {
-            dynamicContentContainer.innerHTML = `<div class="loader-container"><div class="loader"></div><p>Loading company and market insights...</p></div>`;
-            try {
-                appData.companyInsightsData = await fetchCompanyInsights(appData.name);
-                // Sync the new data back to the consolidated structure
-                syncLegacyProperties();
-                dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData); // Re-render with data
-            } catch (error) {
-                console.error("Error fetching company insights:", error);
-                dynamicContentContainer.innerHTML = '<p class="error">Failed to fetch company insights. Please try again.</p>';
-            }
-        } else {
-            dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData);
-        }
+        // Always render using the new structure for company-insights
+        dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData);
 
 
         // Add event listeners for navigation buttons
@@ -689,14 +628,12 @@ document.addEventListener('DOMContentLoaded', () => {
             appData.backlogUrl = backlogUrlInput.value.trim();
             return true;
         }
-        if (stepData.id === 'company-insights' && appData.companyInsightsData) {
-            // Save editable fields
-            appData.companyInsightsData.marketShare = document.getElementById('market-share')?.value || appData.companyInsightsData.marketShare;
+        if (stepData.id === 'company-insights') {
             document.querySelectorAll('.editable-insight').forEach(input => {
-                const path = input.dataset.path.split('.'); // e.g., "competitors.comp1.user_reviews.0.positive.0" or "swot.strengths.0"
+                const path = input.dataset.path.split('.');
                 let obj = appData;
                 try {
-                    if (path[0] === 'competitors') { // e.g. competitors.comp1.user_reviews.0.positive.0
+                    if (path[0] === 'competitors') {
                         const comp = obj.competitors.find(c => c.id === path[1]);
                         if(comp) {
                             if (path[2] === 'user_reviews' && path[3] === '0' && path[4] === 'positive') {
@@ -706,47 +643,58 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             }
                         }
-                    } else if (path[0] === 'swot') { // e.g. swot.strengths.0
+                    } else if (path[0] === 'swot') {
                         const index = parseInt(path[2]);
                         if (obj.swot[path[1]] && obj.swot[path[1]][index] !== undefined) {
                             obj.swot[path[1]][index] = input.value;
                         }
-                    } else if (path[0] === 'user_reviews') { // e.g. user_reviews.0.positive.0
+                    } else if (path[0] === 'user_reviews') {
                         const index = parseInt(path[3]);
                         if (obj.user_reviews[0] && obj.user_reviews[0].positive) {
                             obj.user_reviews[0].positive[index] = input.value;
                         }
+                    } else if (path[0] === 'marketShare') {
+                        obj.marketShare = input.value;
                     }
                 } catch (e) { console.warn("Could not save insight field:", path.join('.'), e); }
             });
-            // Sync changes back to consolidated structure
-            syncLegacyProperties();
             return true;
         }
         if (stepData.id === 'backlog-parser') {
-            const backlogFileInput = document.getElementById('backlog-file-parser');
-            const backlogUrlInput = document.getElementById('backlog-url-parser');
-             if (backlogFileInput.files.length > 0) {
-                appData.backlogFile = backlogFileInput.files[0];
-            } else if (!backlogFileInput.value && appData.backlogFile) {
-                // Keep existing if input cleared
-            } else {
-                appData.backlogFile = null;
-            }
-            appData.backlogUrl = backlogUrlInput.value.trim();
+            const parseBtn = document.getElementById('parse-backlog-btn');
+            const loader = document.getElementById('parser-loader-container');
+            const dynamicContentContainer = document.getElementById('dynamic-step-content');
 
-            if (appData.features) {
-                 document.querySelectorAll('.editable-feature').forEach(input => {
-                    const domain = input.dataset.domain;
-                    const subDomain = input.dataset.sub_domain;
-                    const version = input.dataset.version;
-                    const feature = appData.features.find(f => f.domain === domain && f.sub_domain === subDomain && f.version === version);
-                    if (feature) feature.feature = input.value;
+            if (parseBtn && loader && dynamicContentContainer) {
+                parseBtn.addEventListener('click', async () => {
+                    loader.classList.remove('hidden');
+                    parseBtn.disabled = true;
+                    // Clear any previous error messages
+                    const existingError = dynamicContentContainer.querySelector('.error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                    try {
+                        // Ensure latest backlogFile/URL is saved to appData before fetching
+                        validateAndSaveStep(index);
+                        const parsed = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.user_reviews?.[0]?.positive);
+                        appData.features = parsed.features || [];
+                        appData.feedbackCoverage = parsed.feedbackCoverage || null;
+                        // Re-render the dynamic content of this step to show parsed data
+                        dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
+                        attachStepEventListeners(index);
+                    } catch (error) {
+                        console.error("Error parsing backlog:", error);
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error';
+                        errorDiv.innerHTML = '<p>Failed to parse backlog. Please try again.</p>';
+                        dynamicContentContainer.insertBefore(errorDiv, dynamicContentContainer.firstChild);
+                    } finally {
+                        loader.classList.add('hidden');
+                        parseBtn.disabled = false;
+                    }
                 });
-                // Sync changes back to consolidated structure
-                syncLegacyProperties();
             }
-            return true;
         }
         if (stepData.id === 'define-epics') {
             const epicTitle = document.getElementById('epic-title');
@@ -889,25 +837,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseBtn.addEventListener('click', async () => {
                     loader.classList.remove('hidden');
                     parseBtn.disabled = true;
-                    
                     // Clear any previous error messages
                     const existingError = dynamicContentContainer.querySelector('.error');
                     if (existingError) {
                         existingError.remove();
                     }
-                    
                     try {
                         // Ensure latest backlogFile/URL is saved to appData before fetching
-                        validateAndSaveStep(index); // This saves backlog-file-parser and backlog-url-parser
-                        appData.parsedBacklogData = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.user_reviews?.[0]?.positive);
-                        // Sync the new data back to the consolidated structure
-                        syncLegacyProperties();
+                        validateAndSaveStep(index);
+                        const parsed = await fetchParsedBacklog(appData.backlogFile ? appData.backlogFile.name : null, appData.backlogUrl, appData.user_reviews?.[0]?.positive);
+                        appData.features = parsed.features || [];
+                        appData.feedbackCoverage = parsed.feedbackCoverage || null;
                         // Re-render the dynamic content of this step to show parsed data
                         dynamicContentContainer.innerHTML = flowSteps[index].contentGenerator(flowSteps[index], appData);
-                        attachStepEventListeners(index); // Re-attach listeners for new content
+                        attachStepEventListeners(index);
                     } catch (error) {
                         console.error("Error parsing backlog:", error);
-                        // Add error message at the top of the content, not append
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'error';
                         errorDiv.innerHTML = '<p>Failed to parse backlog. Please try again.</p>';

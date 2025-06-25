@@ -136,14 +136,9 @@ function generatePrepInsightsHTML(stepData, appData) {
 
 // Step 3: Company Insights
 function generateCompanyInsightsHTML(stepData, appData) {
-    if (!appData.companyInsightsData) {
-        return `<div class="loader-container"><div class="loader"></div><p>Loading company and market insights...</p></div>`;
-    }
-    
     // Use the new data structure directly
-    const { competitors, swot, user_reviews } = appData;
-    const marketShare = appData.companyInsightsData?.marketShare || '15% (Estimated)';
-
+    const { competitors, swot, user_reviews, marketShare } = appData;
+    
     let competitorsHTML = competitors.map(c => {
         const strength = c.user_reviews[0]?.positive[0] || 'Strong competitor';
         return `<li><strong>${c.name} (${c.company}):</strong> <input type="text" class="editable-insight" data-path="competitors.${c.id}.user_reviews.0.positive.0" value="${strength}"></li>`;
@@ -211,19 +206,17 @@ function generateBacklogParserHTML(stepData, appData) {
         featuresHTML = `
             <div id="features-section">
                 <h3>Features by Domain</h3>`;
-        
         Object.entries(featuresByDomain).forEach(([domain, features]) => {
             featuresHTML += `
                 <h4>${domain}</h4>
                 <ul>${features.map(f => `<li><input type="text" class="editable-feature" data-domain="${f.domain}" data-sub-domain="${f.sub_domain}" data-version="${f.version}" value="${f.feature}"> <span class="feature-meta">(${f.sub_domain} - ${f.version})</span></li>`).join('')}</ul>`;
         });
-        
         featuresHTML += `</div>`;
     }
 
     let feedbackCoverageHTML = '';
-    if (appData.parsedBacklogData && appData.parsedBacklogData.feedbackCoverage) {
-        const { notCovered, covered } = appData.parsedBacklogData.feedbackCoverage;
+    if (appData.feedbackCoverage) {
+        const { notCovered, covered } = appData.feedbackCoverage;
         feedbackCoverageHTML = `
             <div id="feedback-coverage-section">
                 <h3>Feedback Coverage</h3>
