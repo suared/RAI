@@ -591,6 +591,63 @@ document.addEventListener('DOMContentLoaded', () => {
         attachStepEventListeners(index);
     }
 
+    // --- API Integration for /run-flow ---
+    let currentRunFlowRequestId = null;
+    let currentRunFlowStatus = null;
+
+    async function startRunFlow() {
+        const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
+        if (!idToken) {
+            alert('You must be signed in with Google to start the flow.');
+            return;
+        }
+        // Prepare payload
+        const payload = {
+            product_name: appData.name,
+            goals: appData.goals,
+            problem_statements: appData.problem_statements
+        };
+        // Show loading/progress message
+        showRunFlowStatus('Submitting to backend...');
+        try {
+            const response = await fetch('/run-flow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + idToken
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.success) {
+                // Store request_id for SSE (to be used in next step)
+                currentRunFlowRequestId = data.request_id || null;
+                currentRunFlowStatus = 'pending';
+                showRunFlowStatus('Flow started! Waiting for backend processing...');
+                // (SSE integration will be added next)
+            } else {
+                showRunFlowStatus('Backend error: ' + (data.error || data.message));
+            }
+        } catch (err) {
+            showRunFlowStatus('Network or server error: ' + err.message);
+        }
+    }
+
+    function showRunFlowStatus(msg) {
+        let statusDiv = document.getElementById('run-flow-status');
+        if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'run-flow-status';
+            statusDiv.style.margin = '16px 0';
+            statusDiv.style.padding = '8px';
+            statusDiv.style.background = '#f0f0f0';
+            statusDiv.style.borderRadius = '6px';
+            statusDiv.style.textAlign = 'center';
+            document.body.insertBefore(statusDiv, document.body.firstChild);
+        }
+        statusDiv.textContent = msg;
+    }
+
     function validateAndSaveStep(index) {
         const stepData = flowSteps[index];
         if (stepData.id === 'goals') {
@@ -613,6 +670,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     appData.problem_statements.push(input.value.trim()); // Add only non-empty, trimmed values
                 }
             });
+            // --- Call backend after goals step is saved ---
+            startRunFlow();
             return true;
         }
         if (stepData.id === 'prep-insights') {
