@@ -594,6 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Integration for /run-flow ---
     let currentRunFlowRequestId = null;
     let currentRunFlowStatus = null;
+    let currentRunFlowEventSource = null;
 
     async function startRunFlow() {
         const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
@@ -620,17 +621,49 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             if (data.success) {
-                // Store request_id for SSE (to be used in next step)
+                // Store request_id for SSE
                 currentRunFlowRequestId = data.request_id || null;
                 currentRunFlowStatus = 'pending';
                 showRunFlowStatus('Flow started! Waiting for backend processing...');
-                // (SSE integration will be added next)
+                // Start SSE integration
+                if (currentRunFlowRequestId) {
+                    startRunFlowSSE(currentRunFlowRequestId, idToken);
+                }
             } else {
                 showRunFlowStatus('Backend error: ' + (data.error || data.message));
             }
         } catch (err) {
             showRunFlowStatus('Network or server error: ' + err.message);
         }
+    }
+
+    function startRunFlowSSE(requestId, idToken) {
+        // Close any previous EventSource
+        if (currentRunFlowEventSource) {
+            currentRunFlowEventSource.close();
+            currentRunFlowEventSource = null;
+        }
+        // Use a proxy to add Authorization header (SSE does not support custom headers natively)
+        // For now, use a query param for the token (backend must support this)
+        const sseUrl = `/events/${requestId}?token=${encodeURIComponent(idToken)}`;
+        const es = new EventSource(sseUrl);
+        currentRunFlowEventSource = es;
+        showRunFlowStatus('Listening for backend updates...');
+        es.addEventListener('update', (event) => {
+            const data = JSON.parse(event.data);
+            showRunFlowStatus('Flow update: ' + data.status);
+        });
+        es.addEventListener('completion', (event) => {
+            const data = JSON.parse(event.data);
+            showRunFlowStatus('Flow completed with status: ' + data.status);
+            es.close();
+            currentRunFlowEventSource = null;
+        });
+        es.onerror = (err) => {
+            showRunFlowStatus('Lost connection to backend events.');
+            es.close();
+            currentRunFlowEventSource = null;
+        };
     }
 
     function showRunFlowStatus(msg) {
