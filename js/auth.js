@@ -18,7 +18,7 @@ function renderGoogleSignIn() {
         return;
     }
     window.google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID', // TODO: Replace with your actual client ID
+        client_id: '333682720257-hmucqsepe6skbdlr856fvsccf95mp7pk.apps.googleusercontent.com', // TODO: Replace with your actual client ID
         callback: handleCredentialResponse
     });
     window.google.accounts.id.renderButton(
