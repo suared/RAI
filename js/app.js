@@ -619,6 +619,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(payload)
             });
+            
+            // Handle HTTP error responses
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                let errorMessage = 'Backend error occurred.';
+                
+                if (response.status === 403) {
+                    errorMessage = 'Access denied. You are not listed in the friends and family group. Please log in with an authorized account or ask to be added.';
+                } else if (response.status === 401) {
+                    errorMessage = 'Authentication failed. Please sign in again.';
+                } else if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                } else {
+                    errorMessage = `Server error (${response.status}): ${response.statusText}`;
+                }
+                
+                showRunFlowStatus(errorMessage);
+                return;
+            }
+            
             const data = await response.json();
             if (data.success) {
                 // Store request_id for SSE
@@ -672,12 +692,29 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDiv = document.createElement('div');
             statusDiv.id = 'run-flow-status';
             statusDiv.style.margin = '16px 0';
-            statusDiv.style.padding = '8px';
-            statusDiv.style.background = '#f0f0f0';
+            statusDiv.style.padding = '12px';
             statusDiv.style.borderRadius = '6px';
             statusDiv.style.textAlign = 'center';
+            statusDiv.style.fontWeight = '500';
             document.body.insertBefore(statusDiv, document.body.firstChild);
         }
+        
+        // Determine if this is an error message
+        const isError = msg.toLowerCase().includes('error') || 
+                       msg.toLowerCase().includes('denied') || 
+                       msg.toLowerCase().includes('failed') ||
+                       msg.toLowerCase().includes('not authorized');
+        
+        if (isError) {
+            statusDiv.style.background = '#fee';
+            statusDiv.style.color = '#c53030';
+            statusDiv.style.border = '1px solid #feb2b2';
+        } else {
+            statusDiv.style.background = '#f0f0f0';
+            statusDiv.style.color = '#333';
+            statusDiv.style.border = '1px solid #ddd';
+        }
+        
         statusDiv.textContent = msg;
     }
 
