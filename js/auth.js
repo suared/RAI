@@ -17,30 +17,69 @@ function renderGoogleSignIn() {
         setTimeout(renderGoogleSignIn, 100); // Wait for library to load
         return;
     }
-    window.google.accounts.id.initialize({
-        client_id: '333682720257-hmucqsepe6skbdlr856fvsccf95mp7pk.apps.googleusercontent.com', // TODO: Replace with your actual client ID
-        callback: handleCredentialResponse
-    });
-    window.google.accounts.id.renderButton(
-        document.getElementById('google-signin-container'),
-        { theme: 'outline', size: 'large' }
-    );
-    window.google.accounts.id.prompt();
+    
+    console.log('Initializing Google Sign-In with client ID:', '333682720257-hmucqsepe6skbdlr856fvsccf95mp7pk.apps.googleusercontent.com');
+    
+    try {
+        window.google.accounts.id.initialize({
+            client_id: '333682720257-hmucqsepe6skbdlr856fvsccf95mp7pk.apps.googleusercontent.com',
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true
+        });
+        
+        window.google.accounts.id.renderButton(
+            document.getElementById('google-signin-container'),
+            { 
+                theme: 'outline', 
+                size: 'large',
+                type: 'standard',
+                text: 'signin_with',
+                shape: 'rectangular'
+            }
+        );
+        
+        // Don't auto-prompt, let user click the button
+        // window.google.accounts.id.prompt();
+        
+        console.log('Google Sign-In initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Google Sign-In:', error);
+        document.getElementById('google-signin-container').innerHTML = 
+            '<p style="color: red;">Error initializing Google Sign-In. Check console for details.</p>';
+    }
 }
 
 function handleCredentialResponse(response) {
+    console.log('OAuth response received:', response);
+    
+    if (response.error) {
+        console.error('OAuth error:', response.error);
+        alert('OAuth Error: ' + response.error);
+        return;
+    }
+    
     const idToken = response.credential;
     currentIdToken = idToken;
-    // Decode JWT to get user info (for display only, not for auth)
-    const payload = JSON.parse(atob(idToken.split('.')[1]));
-    currentUser = {
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture
-    };
-    localStorage.setItem('google_id_token', idToken);
-    localStorage.setItem('google_user', JSON.stringify(currentUser));
-    updateHeaderWithUser();
+    
+    try {
+        // Decode JWT to get user info (for display only, not for auth)
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        currentUser = {
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture
+        };
+        
+        localStorage.setItem('google_id_token', idToken);
+        localStorage.setItem('google_user', JSON.stringify(currentUser));
+        updateHeaderWithUser();
+        
+        console.log('User signed in successfully:', currentUser);
+    } catch (error) {
+        console.error('Error processing OAuth response:', error);
+        alert('Error processing sign-in response');
+    }
 }
 
 function updateHeaderWithUser() {

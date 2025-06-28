@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show loading/progress message
         showRunFlowStatus('Submitting to backend...');
         try {
-            const response = await fetch('/run-flow', {
+            const response = await fetch(`${window.appConfig.backendHost}/run-flow`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Use a proxy to add Authorization header (SSE does not support custom headers natively)
         // For now, use a query param for the token (backend must support this)
-        const sseUrl = `/events/${requestId}?token=${encodeURIComponent(idToken)}`;
+        const sseUrl = `${window.appConfig.backendHost}/events/${requestId}?token=${encodeURIComponent(idToken)}`;
         const es = new EventSource(sseUrl);
         currentRunFlowEventSource = es;
         showRunFlowStatus('Listening for backend updates...');
