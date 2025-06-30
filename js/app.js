@@ -597,94 +597,111 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRunFlowEventSource = null;
 
     async function startRunFlow() {
-        const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
-        if (!idToken) {
-            alert('You must be signed in with Google to start the flow.');
-            return;
-        }
-        // Prepare payload
-        const payload = {
-            product_name: appData.name,
-            goals: appData.goals,
-            problem_statements: appData.problem_statements
-        };
-        // Show loading/progress message
-        showRunFlowStatus('Submitting to backend...');
-        try {
-            const response = await fetch(`${window.appConfig.backendHost}/run-flow`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + idToken
-                },
-                body: JSON.stringify(payload)
-            });
-            
-            // Handle HTTP error responses
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                let errorMessage = 'Backend error occurred.';
-                
-                if (response.status === 403) {
-                    errorMessage = 'Access denied. You are not listed in the friends and family group. Please log in with an authorized account or ask to be added.';
-                } else if (response.status === 401) {
-                    errorMessage = 'Authentication failed. Please sign in again.';
-                } else if (errorData.detail) {
-                    errorMessage = errorData.detail;
-                } else {
-                    errorMessage = `Server error (${response.status}): ${response.statusText}`;
-                }
-                
-                showRunFlowStatus(errorMessage);
-                return;
-            }
-            
-            const data = await response.json();
-            if (data.success) {
-                // Store request_id for SSE
-                currentRunFlowRequestId = data.request_id || null;
-                currentRunFlowStatus = 'pending';
-                showRunFlowStatus('Flow started! Waiting for backend processing...');
-                // Start SSE integration
-                if (currentRunFlowRequestId) {
-                    startRunFlowSSE(currentRunFlowRequestId, idToken);
-                }
-            } else {
-                showRunFlowStatus('Backend error: ' + (data.error || data.message));
-            }
-        } catch (err) {
-            showRunFlowStatus('Network or server error: ' + err.message);
-        }
+    const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
+    if (!idToken) {
+        showRunFlowStatus('You must be signed in to start the flow. Please log in.');
+        return;
     }
 
-    function startRunFlowSSE(requestId, idToken) {
-        // Close any previous EventSource
-        if (currentRunFlowEventSource) {
-            currentRunFlowEventSource.close();
-            currentRunFlowEventSource = null;
+    // Prepare payload
+    const payload = {
+        product_name: appData.name,
+        goals: appData.goals,
+        problem_statements: appData.problem_statements
+    };
+
+    // Show loading/progress message
+    showRunFlowStatus('Submitting to backend...');
+
+    try {
+        const response = await fetch(`${window.appConfig.backendHost}/run-flow`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + idToken
+            },
+            body: JSON.stringify(payload)
+        });
+
+        // Handle HTTP error responses
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            let errorMessage = 'An unknown backend error occurred.';
+
+            if (response.status === 401 || response.status === 403) {
+                errorMessage = 'Authentication error. Please make sure you are logged in with an authorized account.';
+            } else if (errorData.detail) {
+                errorMessage = `Backend Error: ${errorData.detail}`;
+            } else {
+                errorMessage = `Server error (${response.status}): ${response.statusText}`;
+            }
+            
+            showRunFlowStatus(errorMessage);
+            return;
         }
-        // Use a proxy to add Authorization header (SSE does not support custom headers natively)
-        // For now, use a query param for the token (backend must support this)
-        const sseUrl = `${window.appConfig.backendHost}/events/${requestId}?token=${encodeURIComponent(idToken)}`;
-        const es = new EventSource(sseUrl);
-        currentRunFlowEventSource = es;
-        showRunFlowStatus('Listening for backend updates...');
-        es.addEventListener('update', (event) => {
-            const data = JSON.parse(event.data);
-            showRunFlowStatus('Flow update: ' + data.status);
-        });
-        es.addEventListener('completion', (event) => {
-            const data = JSON.parse(event.data);
-            showRunFlowStatus('Flow completed with status: ' + data.status);
-            es.close();
-            currentRunFlowEventSource = null;
-        });
-        es.onerror = (err) => {
-            showRunFlowStatus('Lost connection to backend events.');
-            es.close();
-            currentRunFlowEventSource = null;
-        };
+
+        const data = await response.json();
+        if (data.success) {
+            // Store request_id for SSE
+            currentRunFlowRequestId = data.request_id || null;
+            currentRunFlowStatus = 'pending';
+            showRunFlowStatus('Flow started! Waiting for backend processing...');
+            // Start SSE integration
+            if (currentRunFlowRequestId) {
+                startRunFlowSSE(currentRunFlowRequestId, idToken);
+            }
+        } else {
+            showRunFlowStatus('Backend error: ' + (data.error || data.message));
+        }
+    } catch (err) {
+        showRunFlowStatus('Network or server error: ' + err.message);
     }
+}
+
+    function startRunFlowSSE(requestId, idToken) {
+    // Close any previous EventSource
+    if (currentRunFlowEventSource) {
+        currentRunFlowEventSource.close();
+        currentRunFlowEventSource = null;
+    }
+    // Use a proxy to add Authorization header (SSE does not support custom headers natively)
+    // For now, use a query param for the token (backend must support this)
+    const sseUrl = `${window.appConfig.backendHost}/events/${requestId}?token=${encodeURIComponent(idToken)}`;
+    console.log('Connecting to SSE at:', sseUrl);
+
+    const es = new EventSource(sseUrl);
+    currentRunFlowEventSource = es;
+
+    es.onopen = () => {
+        console.log('SSE connection opened.');
+        showRunFlowStatus('Listening for backend updates...');
+    };
+
+    es.onmessage = (event) => {
+        console.log('SSE message received:', event.data);
+    };
+
+    es.addEventListener('update', (event) => {
+        console.log('SSE "update" event received:', event.data);
+        const data = JSON.parse(event.data);
+        showRunFlowStatus('Flow update: ' + data.status);
+    });
+
+    es.addEventListener('completion', (event) => {
+        console.log('SSE "completion" event received:', event.data);
+        const data = JSON.parse(event.data);
+        showRunFlowStatus('Flow completed with status: ' + data.status);
+        es.close();
+        currentRunFlowEventSource = null;
+    });
+
+    es.onerror = (err) => {
+        console.error('SSE Error:', err);
+        showRunFlowStatus('Lost connection to backend events.');
+        es.close();
+        currentRunFlowEventSource = null;
+    };
+}
 
     function showRunFlowStatus(msg) {
         let statusDiv = document.getElementById('run-flow-status');
