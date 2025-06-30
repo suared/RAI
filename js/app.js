@@ -681,10 +681,18 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('SSE message received:', event.data);
     };
 
-    es.addEventListener('update', (event) => {
+    es.addEventListener('update', async (event) => {
         console.log('SSE "update" event received:', event.data);
         const data = JSON.parse(event.data);
-        showRunFlowStatus('Flow update: ' + data.status);
+
+        try {
+            const productInfo = await fetchCurrentProductInfo(appData.name, idToken);
+            Object.assign(appData, productInfo);
+        } catch (err) {
+            console.error('Failed to update product info from backend:', err);
+        }
+
+        showRunFlowStatus('Event data is now streaming from backend...');
     });
 
     es.addEventListener('completion', (event) => {
@@ -1010,6 +1018,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
+    }
+
+    async function fetchCurrentProductInfo(productName, idToken) {
+        const response = await fetch(`${window.appConfig.backendHost}/products/${encodeURIComponent(productName)}`, {
+            headers: {
+                'Authorization': 'Bearer ' + idToken
+            }
+        });
+        if (!response.ok) throw new Error('Failed to fetch product info');
+        return await response.json();
     }
 
     init();
