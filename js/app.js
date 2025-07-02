@@ -695,9 +695,15 @@ document.addEventListener('DOMContentLoaded', () => {
         showRunFlowStatus('Event data is now streaming from backend...');
     });
 
-    es.addEventListener('completion', (event) => {
+    es.addEventListener('completion', async (event) => {
         console.log('SSE "completion" event received:', event.data);
         const data = JSON.parse(event.data);
+        try {
+            const productInfo = await fetchCurrentProductInfo(appData.name, idToken);
+            Object.assign(appData, productInfo);
+        } catch (err) {
+            console.error('Failed to update product info from backend on completion:', err);
+        }
         showRunFlowStatus('Flow completed with status: ' + data.status);
         es.close();
         currentRunFlowEventSource = null;
@@ -1021,6 +1027,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchCurrentProductInfo(productName, idToken) {
+        if (!productName) {
+            console.error('No product name set, cannot fetch product info');
+            return;
+        }
+        console.log('Fetching product info for:', productName, 'with token:', idToken);
         const response = await fetch(`${window.appConfig.backendHost}/products/${encodeURIComponent(productName)}`, {
             headers: {
                 'Authorization': 'Bearer ' + idToken
