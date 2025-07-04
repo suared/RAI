@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observe Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="filters">
+            <div class="filter">
+                <label for="release-name">Release Name:</label>
+                <select id="release-name">
+                    <option value="release1">Release 1</option>
+                    <option value="release2">Release 2</option>
+                    <option value="release3">Release 3</option>
+                </select>
+            </div>
+            <div class="filter">
+                <label for="start-date">Start Date:</label>
+                <input type="date" id="start-date">
+                <label for="end-date">End Date:</label>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Idea Generation & Prioritization</h2>
+            <div class="charts">
+                <div id="idea-generation-chart-container" class="chart-container"></div>
+                <div id="prioritization-chart-container" class="chart-container"></div>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="section-title">Feature Engineering</h2>
+            <div class="charts">
+                <div id="feature-engineering-chart-container" class="chart-container"></div>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="section-title">Product Support</h2>
+            <div class="support-table-container">
+                <table class="support-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Details</th>
+                            <th>Open Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="support-table-body">
+                        <!-- Customer and action rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                <div class="support-table-actions">
+                    <button id="expand-all-btn">Expand All</button>
+                    <button id="collapse-all-btn">Collapse All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

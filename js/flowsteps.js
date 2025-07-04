@@ -79,6 +79,14 @@ const flowSteps = [
         heroImage: 'images/step-learnings.jpg', // Placeholder
         contentGenerator: generatePlaceholderHTML,
         isFuture: true,
+    },
+    {
+        id: 'observe',
+        title: '11. Observe',
+        shortTitle: 'Observe',
+        heroImage: 'images/hero-main.jpg', // Placeholder
+        contentGenerator: generateObserveHTML,
+        isFuture: false,
     }
 ];
 
@@ -303,4 +311,45 @@ function generatePlaceholderHTML(stepData) {
             <i class="fas fa-cogs"></i> <!-- Example Icon -->
         </div>
     `;
+}
+
+function generateObserveHTML() {
+    // This function will be updated in app.js to fetch and return the content of observe.html
+    return `<div>Loading Observe Dashboard...</div>`;
+}
+
+// Mock API call for backlog parsing
+async function fetchParsedBacklog(fileName, url, userFeedback) {
+    console.log("Simulating backlog parsing for:", fileName || url);
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+
+    // Mock response based on the provided user feedback
+    const mockFeatures = [
+        { domain: 'User Experience', sub_domain: 'Onboarding', feature: 'Simplify the initial setup wizard.', version: 'Now', status: 0 },
+        { domain: 'Integration', sub_domain: 'CRM', feature: 'Add native integration for Salesforce.', version: 'Next', status: 0 },
+        { domain: 'Reporting', sub_domain: 'Customization', feature: 'Allow users to create custom report templates.', version: 'Future', status: 0 },
+        { domain: 'Mobile', sub_domain: 'Performance', feature: 'Improve loading times on the mobile app.', version: 'Next', status: 0 },
+        { domain: 'Support', sub_domain: 'Response Time', feature: 'Implement a tiered support system for faster responses.', version: 'Now', status: 0 }
+    ];
+
+    const mockFeedbackCoverage = {
+        notCovered: [],
+        covered: []
+    };
+
+    if (userFeedback && userFeedback.length > 0) {
+        userFeedback.forEach(feedback => {
+            const relatedFeature = mockFeatures.find(f => feedback.toLowerCase().includes(f.sub_domain.toLowerCase()));
+            if (relatedFeature) {
+                mockFeedbackCoverage.covered.push({ feedbackText: feedback, relatedFeature: relatedFeature.feature });
+            } else {
+                mockFeedbackCoverage.notCovered.push({ feedbackText: feedback, reason: 'No direct feature match found' });
+            }
+        });
+    }
+
+    return {
+        features: mockFeatures,
+        feedbackCoverage: mockFeedbackCoverage
+    };
 }

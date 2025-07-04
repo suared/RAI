@@ -490,6 +490,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             stepEl.addEventListener('click', () => {
+                if (step.id === 'observe') {
+                    mainHeroImage.classList.add('hidden');
+                    stepContentWrapper.classList.remove('hidden');
+                    navigateToStep(index);
+                    return;
+                }
                 if (!step.isFuture && index <= getFurthestReachableStep()) {
                     navigateToStep(index);
                 }
@@ -560,8 +566,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dynamicContentContainer = document.getElementById('dynamic-step-content');
         
-        // Always render using the new structure for company-insights
-        dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData);
+        if (stepData.id === 'observe') {
+            try {
+                const response = await fetch('observe.html');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const html = await response.text();
+                dynamicContentContainer.innerHTML = html;
+                
+                // Dynamically load the dashboard script
+                const script = document.createElement('script');
+                script.src = 'js/dashboard.js';
+                script.onload = () => console.log('dashboard.js loaded and executed.');
+                script.onerror = () => console.error('Failed to load dashboard.js');
+                document.body.appendChild(script);
+
+            } catch (error) {
+                console.error('Failed to fetch observe.html:', error);
+                dynamicContentContainer.innerHTML = '<p>Error loading dashboard. Please try again later.</p>';
+            }
+        } else {
+            // Always render using the new structure for company-insights
+            dynamicContentContainer.innerHTML = stepData.contentGenerator(stepData, appData);
+        }
 
 
         // Add event listeners for navigation buttons
