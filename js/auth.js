@@ -31,7 +31,7 @@ function renderGoogleSignIn() {
         window.google.accounts.id.renderButton(
             document.getElementById('google-signin-container'),
             { 
-                theme: 'outline', 
+                theme: 'filled_black', 
                 size: 'large',
                 type: 'standard',
                 text: 'signin_with',

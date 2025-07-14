@@ -425,8 +425,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init() {
-        // Placeholder for App Logo
-        appLogo.src = generateAbstractLogo(); // Simple generated logo
 
         renderStepper();
         // Initially, show hero, hide steps

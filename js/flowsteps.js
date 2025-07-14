@@ -84,7 +84,7 @@ const flowSteps = [
         id: 'observe',
         title: '11. Observe',
         shortTitle: 'Observe',
-        heroImage: 'images/hero-main.jpg', // Placeholder
+        heroImage: 'images/lm-bg.png', // Placeholder
         contentGenerator: generateObserveHTML,
         isFuture: false,
     }
