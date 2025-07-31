@@ -3,37 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Discovery Flow</title>
+    <title>Lastmile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/lm-logo-turq.png" alt="App Logo" id="appLogo"> <!-- Generate an app logo -->
-        </div>
-        <div id="google-signin-container"></div>
-        <nav id="flow-stepper">
-            <!-- Stepper will be dynamically generated here -->
-        </nav>
-    </header>
 
-    <main id="main-content">
-        <div class="hero-image-main" style="background-image: url('images/lm-bg.png');"> <!-- Main Hero -->
-            <div class="hero-text">
-                <h2>Streamline Your Product Strategy</h2>
-                <p>From market problems to actionable epics, effortlessly.</p>
-                <button id="start-discovery-btn">Start Product Discovery</button>
+    <!-- Landing Page View -->
+    <div id="landing-view">
+        <header class="main-header">
+            <div class="logo">
+                <img src="images/logo.svg" alt="Lastmile Logo">
             </div>
-        </div>
-        <div id="step-content-wrapper" class="hidden">
-            <!-- Current step content will be loaded here -->
-        </div>
-    </main>
+            <nav class="main-nav">
+                <a href="#">Demo</a>
+                <a href="#">Documentation</a>
+                <a href="#" class="button-primary" id="start-building-btn">Start Building</a>
+            </nav>
+        </header>
 
-    <footer>
-        <p>© 2025 Last Mile Labs</p>
-    </footer>
+        <main class="main-content">
+            <section class="hero-section">
+                <div class="hero-text">
+                    <h1>One platform.<br>Every AI tool you need.</h1>
+                    <p>Lastmile replaces legacy SI models with an AI-native approach that prioritizes what matters, automates what doesn't, and delivers where others stall.</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="button-secondary">How it Works</a>
+                        <a href="#" class="button-primary">Try Lastmile</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="images/pipeline.svg" alt="Product Pipeline">
+                </div>
+            </section>
+            <section class="illustration-section">
+                <img src="images/yellowcar.svg" alt="Yellow Car Illustration">
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p>Copyright Lastmile Inc. 2025</p>
+            <nav class="footer-nav">
+                <a href="#">Support</a>
+                <a href="#">Contact Us</a>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- Main Application View (Initially Hidden) -->
+    <div id="app-view" class="hidden">
+        <header class="app-header">
+            <div class="logo">
+                <img src="images/logo.svg" alt="Lastmile Logo" id="app-logo-back-btn" style="cursor: pointer;">
+            </div>
+            <div id="google-signin-container"></div>
+            <nav id="flow-stepper">
+                <!-- Stepper will be dynamically generated here -->
+            </nav>
+        </header>
+
+        <main id="step-content-wrapper">
+            <!-- Step content will be loaded here -->
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2025 Lastmile</p>
+        </footer>
+    </div>
 
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>

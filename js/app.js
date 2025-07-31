@@ -1,11 +1,14 @@
 // js/app.js
 document.addEventListener('DOMContentLoaded', () => {
+    // --- NEW: View containers and trigger button ---
+    const landingView = document.getElementById('landing-view');
+    const appView = document.getElementById('app-view');
+    const startBuildingBtn = document.getElementById('start-building-btn');
+    
+    // --- ORIGINAL: DOM Elements ---
     const stepperContainer = document.getElementById('flow-stepper');
-    const mainContentArea = document.getElementById('main-content');
     const stepContentWrapper = document.getElementById('step-content-wrapper');
-    const startDiscoveryBtn = document.getElementById('start-discovery-btn');
-    const mainHeroImage = document.querySelector('.hero-image-main');
-    const appLogo = document.getElementById('appLogo');
+    const appLogo = document.getElementById('appLogo'); // Note: This ID might not exist anymore, but we'll keep the line for safety.
 
     // App state
     let currentStepIndex = 0;
@@ -178,10 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     };
-    
+
     // Consolidated app data with default mock data
     let appData = {
-        // User input data - aligned with backend structure
         name: '',
         goals: [],
         problem_statements: [],
@@ -363,16 +365,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mock data management functions
     function switchMockData(dataSetName) {
         if (alternativeDataSets[dataSetName]) {
-            // Update appData with the alternative data set
             const newData = alternativeDataSets[dataSetName];
             appData.competitors = newData.competitors;
             appData.features = newData.features;
             appData.user_reviews = newData.user_reviews;
             appData.swot = newData.swot;
-            
             console.log(`Mock data switched to: ${dataSetName}`);
         } else {
-            console.warn(`Data set "${dataSetName}" not found. Available sets:`, Object.keys(alternativeDataSets));
+            console.warn(`Data set "${dataSetName}" not found.`);
         }
     }
 
@@ -425,17 +425,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init() {
+        // Show landing page, hide app view by default
+        landingView.classList.remove('hidden');
+        appView.classList.add('hidden');
+
+        // Add click listener to the "Start Building" button
+        startBuildingBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Stop the link from navigating
+            landingView.classList.add('hidden');
+            appView.classList.remove('hidden');
+            initializeAppLogic(); // Start the main application
+        });
+    }
+
+    function initializeAppLogic() {
+        const appLogoBackBtn = document.getElementById('app-logo-back-btn');
+
+        appLogoBackBtn.addEventListener('click', () => {
+            // Hide app and show landing page
+            appView.classList.add('hidden');
+            landingView.classList.remove('hidden');
+            
+            // Reset state for a fresh start
+            currentStepIndex = 0;
+            // Here you might want to reset appData to its initial state as well
+            // For simplicity, we'll just reset the step index.
+        });
 
         renderStepper();
-        // Initially, show hero, hide steps
-        mainHeroImage.classList.remove('hidden');
-        stepContentWrapper.classList.add('hidden');
-
-        startDiscoveryBtn.addEventListener('click', () => {
-            mainHeroImage.classList.add('hidden');
-            stepContentWrapper.classList.remove('hidden');
-            renderStepContent(currentStepIndex);
-        });
+        // Directly render the first step's content, as the old hero is gone
+        stepContentWrapper.classList.remove('hidden');
+        renderStepContent(currentStepIndex);
         
         // Log mock data management status
         console.log('App initialized with mock data sets:', getAvailableDataSets());
@@ -476,9 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stepEl.textContent = step.shortTitle;
             stepEl.dataset.stepIndex = index;
 
-            if (index === currentStepIndex && !mainHeroImage.classList.contains('hidden')) {
-                // No active step if main hero is shown
-            } else if (index === currentStepIndex) {
+            if (index === currentStepIndex) {
                 stepEl.classList.add('active');
             } else if (index < currentStepIndex) {
                 stepEl.classList.add('completed');
@@ -489,7 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             stepEl.addEventListener('click', () => {
                 if (step.id === 'observe') {
-                    mainHeroImage.classList.add('hidden');
                     stepContentWrapper.classList.remove('hidden');
                     navigateToStep(index);
                     return;
@@ -520,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return furthest;
     }
 
-
+    
     function navigateToStep(index) {
         if (index >= 0 && index < flowSteps.length) {
             currentStepIndex = index;
@@ -535,16 +552,16 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="step-hero" style="background-image: url('${stepData.heroImage}');">
                 <h2 class="step-title-overlay">${stepData.title}</h2>
             </div>
-            <div id="dynamic-step-content">
-                <!-- JS will populate this -->
-            </div>
-            <div class="navigation-buttons">
+            <div id="dynamic-step-content" style="padding: 20px;"></div>
+            <div class="navigation-buttons" style="padding: 20px; border-top: 1px solid #eee;">
                 <button class="prev-step" ${index === 0 ? 'disabled' : ''}>« Previous</button>
                 <button class="next-step" ${index === flowSteps.length - 1 || flowSteps[index + 1]?.isFuture ? 'disabled' : ''}>
                     ${flowSteps[index + 1]?.isFuture ? 'Next (Future)' : 'Next »'}
                 </button>
             </div>
         `;
+
+        document.getElementById('dynamic-step-content').innerHTML = stepData.contentGenerator(stepData, appData);
         
         // Adjust step-hero CSS for overlay text
         const stepHeroDiv = stepContentWrapper.querySelector('.step-hero');
@@ -600,54 +617,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nextButton) {
             nextButton.addEventListener('click', async () => {
                 if (validateAndSaveStep(currentStepIndex)) {
+                    // Handle special loading sequences if any
                     const currentStepConfig = flowSteps[currentStepIndex];
-                    const nextStepConfig = flowSteps[currentStepIndex + 1];
-
                     if (currentStepConfig.id === 'prep-insights') {
-                        await showPrepInsightsLoadingSequence(nextButton);
-                        navigateToStep(currentStepIndex + 1); // Navigate after loading
-                    } else {
-                        navigateToStep(currentStepIndex + 1);
-                    }                   
+                        await showPrepInsightsLoadingSequence(stepContentWrapper.querySelector('.next-step'));
+                    }
+                    navigateToStep(currentStepIndex + 1);
                 }
             });
         }
         
-        // Attach step-specific event listeners
         attachStepEventListeners(index);
     }
 
     // --- API Integration for /run-flow ---
     let currentRunFlowRequestId = null;
-    let currentRunFlowStatus = null;
     let currentRunFlowEventSource = null;
 
     async function startRunFlow() {
-    const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
-    if (!idToken) {
-        showRunFlowStatus('You must be signed in to start the flow. Please log in.');
-        return;
-    }
-
-    // Prepare payload
-    const payload = {
-        product_name: appData.name,
-        goals: appData.goals,
-        problem_statements: appData.problem_statements
-    };
-
-    // Show loading/progress message
-    showRunFlowStatus('Submitting to backend...');
-
-    try {
-        const response = await fetch(`${window.appConfig.backendHost}/run-flow`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + idToken
-            },
-            body: JSON.stringify(payload)
-        });
+        const idToken = window.getGoogleIdToken && window.getGoogleIdToken();
+        if (!idToken) {
+            showRunFlowStatus('You must be signed in to start the flow.');
+            return;
+        }
+        const payload = {
+            product_name: appData.name,
+            goals: appData.goals,
+            problem_statements: appData.problem_statements
+        };
+        showRunFlowStatus('Submitting to backend...');
+        try {
+            const response = await fetch(`${window.appConfig.backendHost}/run-flow`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+                body: JSON.stringify(payload)
+            });
 
         // Handle HTTP error responses
         if (!response.ok) {
@@ -666,23 +670,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const data = await response.json();
-        if (data.success) {
-            // Store request_id for SSE
-            currentRunFlowRequestId = data.request_id || null;
-            currentRunFlowStatus = 'pending';
-            showRunFlowStatus('Flow started! Waiting for backend processing...');
-            // Start SSE integration
-            if (currentRunFlowRequestId) {
-                startRunFlowSSE(currentRunFlowRequestId, idToken);
+            const data = await response.json();
+            if (data.success) {
+                currentRunFlowRequestId = data.request_id;
+                showRunFlowStatus('Flow started! Waiting for backend processing...');
+                if (currentRunFlowRequestId) {
+                    startRunFlowSSE(currentRunFlowRequestId, idToken);
+                }
+            } else {
+                showRunFlowStatus('Backend error: ' + (data.error || data.message));
             }
-        } else {
-            showRunFlowStatus('Backend error: ' + (data.error || data.message));
+        } catch (err) {
+            showRunFlowStatus('Network or server error: ' + err.message);
         }
-    } catch (err) {
-        showRunFlowStatus('Network or server error: ' + err.message);
     }
-}
 
     function startRunFlowSSE(requestId, idToken) {
     // Close any previous EventSource
@@ -692,38 +693,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Use a proxy to add Authorization header (SSE does not support custom headers natively)
     // For now, use a query param for the token (backend must support this)
-    const sseUrl = `${window.appConfig.backendHost}/events/${requestId}?token=${encodeURIComponent(idToken)}`;
+        const sseUrl = `${window.appConfig.backendHost}/events/${requestId}?token=${encodeURIComponent(idToken)}`;
     console.log('Connecting to SSE at:', sseUrl);
 
-    const es = new EventSource(sseUrl);
-    currentRunFlowEventSource = es;
-
-    es.onopen = () => {
-        console.log('SSE connection opened.');
-        showRunFlowStatus('Listening for backend updates...');
-    };
-
-    es.onmessage = (event) => {
-        console.log('SSE message received:', event.data);
-    };
-
-    es.addEventListener('update', async (event) => {
+        const es = new EventSource(sseUrl);
+        currentRunFlowEventSource = es;
+        es.onopen = () => showRunFlowStatus('Listening for backend updates...');
+        es.addEventListener('update', async (event) => {
         console.log('SSE "update" event received:', event.data);
-        const data = JSON.parse(event.data);
-
+            const data = JSON.parse(event.data);
+        
         try {
             const productInfo = await fetchCurrentProductInfo(appData.name, idToken);
             Object.assign(appData, productInfo);
         } catch (err) {
             console.error('Failed to update product info from backend:', err);
         }
-
-        showRunFlowStatus('Event data is now streaming from backend...');
-    });
-
-    es.addEventListener('completion', async (event) => {
+            showRunFlowStatus(`Backend status: ${data.status}`);
+        });
+        es.addEventListener('completion', async (event) => {
         console.log('SSE "completion" event received:', event.data);
-        const data = JSON.parse(event.data);
+            const data = JSON.parse(event.data);
         try {
             const productInfo = await fetchCurrentProductInfo(appData.name, idToken);
             Object.assign(appData, productInfo);
@@ -733,45 +723,25 @@ document.addEventListener('DOMContentLoaded', () => {
         showRunFlowStatus('Flow completed with status: ' + data.status);
         es.close();
         currentRunFlowEventSource = null;
-    });
-
-    es.onerror = (err) => {
-        console.error('SSE Error:', err);
-        showRunFlowStatus('Lost connection to backend events.');
-        es.close();
-        currentRunFlowEventSource = null;
-    };
-}
+        });
+        es.onerror = () => {
+            showRunFlowStatus('Lost connection to backend events.');
+            es.close();
+            currentRunFlowEventSource = null;
+        };
+    }
 
     function showRunFlowStatus(msg) {
         let statusDiv = document.getElementById('run-flow-status');
         if (!statusDiv) {
             statusDiv = document.createElement('div');
             statusDiv.id = 'run-flow-status';
-            statusDiv.style.margin = '16px 0';
-            statusDiv.style.padding = '12px';
-            statusDiv.style.borderRadius = '6px';
-            statusDiv.style.textAlign = 'center';
-            statusDiv.style.fontWeight = '500';
-            document.body.insertBefore(statusDiv, document.body.firstChild);
+            statusDiv.style.cssText = 'margin: 16px; padding: 12px; border-radius: 6px; text-align: center;';
+            stepContentWrapper.prepend(statusDiv);
         }
-        
-        // Determine if this is an error message
-        const isError = msg.toLowerCase().includes('error') || 
-                       msg.toLowerCase().includes('denied') || 
-                       msg.toLowerCase().includes('failed') ||
-                       msg.toLowerCase().includes('not authorized');
-        
-        if (isError) {
-            statusDiv.style.background = '#fee';
-            statusDiv.style.color = '#c53030';
-            statusDiv.style.border = '1px solid #feb2b2';
-        } else {
-            statusDiv.style.background = '#f0f0f0';
-            statusDiv.style.color = '#333';
-            statusDiv.style.border = '1px solid #ddd';
-        }
-        
+        const isError = /error|denied|failed|not authorized/i.test(msg);
+        statusDiv.style.background = isError ? '#fee' : '#f0f0f0';
+        statusDiv.style.color = isError ? '#c53030' : '#333';
         statusDiv.textContent = msg;
     }
 
@@ -780,24 +750,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stepData.id === 'goals') {
             const projectNameInput = document.getElementById('project-name');
             const corporateGoalsInput = document.getElementById('corporate-goals');
-            
             if (!projectNameInput.value.trim()) {
                 alert('Project Name is required.');
                 projectNameInput.focus();
                 return false;
             }
             appData.name = projectNameInput.value.trim();
-            // Convert comma-separated goals to array
-            appData.goals = corporateGoalsInput.value.trim().split(',').map(goal => goal.trim()).filter(goal => goal.length > 0);
-            
-            // Initialize to ensure a fresh list from DOM, preventing duplicates on save
-            appData.problem_statements = [];
-            document.querySelectorAll('.problem-statement-input').forEach(input => {
-                if (input.value.trim()) {
-                    appData.problem_statements.push(input.value.trim()); // Add only non-empty, trimmed values
-                }
-            });
-            // --- Call backend after goals step is saved ---
+            appData.goals = corporateGoalsInput.value.trim().split(',').map(g => g.trim()).filter(Boolean);
+            appData.problem_statements = Array.from(document.querySelectorAll('.problem-statement-input')).map(i => i.value.trim()).filter(Boolean);
             startRunFlow();
             return true;
         }
@@ -1059,14 +1019,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log('Fetching product info for:', productName, 'with token:', idToken);
         const response = await fetch(`${window.appConfig.backendHost}/products/${encodeURIComponent(productName)}`, {
-            headers: {
-                'Authorization': 'Bearer ' + idToken
-            }
+            headers: { 'Authorization': 'Bearer ' + idToken }
         });
         if (!response.ok) throw new Error('Failed to fetch product info');
         return await response.json();
     }
 
+    // --- Start the application ---
     init();
-    window.getMockData = getMockData;
+    window.getMockData = getMockData; // Expose for debugging if needed
 });
