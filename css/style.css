@@ -8,17 +8,16 @@
 
     /* Colors */
     --color-primary: #008FA6;
-    --color-primary-dark: #008FA6;
-    --color-accent: #FFD833;
-    --color-dark-footer: #008FA6; /* Matching primary color as per design */
     --color-text-light: #ffffff;
     --color-text-dark: #222222;
     --color-background-light: #ffffff;
+    --color-border: #008FA6;
 }
 
 body, html {
     margin: 0;
     padding: 0;
+    height: 100%;
     font-family: var(--font-primary);
     background-color: var(--color-background-light);
     color: var(--color-text-dark);
@@ -32,70 +31,66 @@ body, html {
     align-items: center;
     padding: 20px 40px;
     background-color: var(--color-background-light);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .main-header .logo img {
     height: 35px;
 }
 
-.main-nav a {
-    margin-left: 25px;
-    text-decoration: none;
-    color: var(--color-text-dark);
-    font-weight: var(--font-weight-regular);
-    font-size: 18px;
-    line-height: 1;
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 /* 3. Buttons */
-.button-primary {
-    background-color: var(--color-primary-dark);
-    color: var(--color-text-light);
+.button {
+    background-color: var(--color-background-light);
+    color: var(--color-primary);
     padding: 10px 20px;
     border-radius: 20px;
     text-decoration: none;
     font-weight: var(--font-weight-regular);
     font-size: 18px;
-    transition: opacity 0.3s;
-}
-
-.button-primary:hover {
-    opacity: 0.85;
-}
-
-.button-secondary {
-    background-color: transparent;
-    color: var(--color-primary-dark);
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: 1px solid var(--color-primary-dark);
-    text-decoration: none;
-    font-weight: var(--font-weight-regular);
-    font-size: 18px;
+    line-height: 1.2; /* Unified line-height */
     transition: background-color 0.3s, color 0.3s;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    display: inline-block;
 }
 
-.button-secondary:hover {
-    background-color: var(--color-primary-dark);
+.button:hover {
+    background-color: var(--color-primary);
     color: var(--color-text-light);
 }
+
 
 
 /* 4. Main Content & Hero Section */
+#landing-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Use 100% of viewport height as the container */
+}
+
 .main-content {
     padding: 0 40px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center the content */
 }
 
 .hero-section {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
-    margin-top: 50px;
     gap: 40px;
 }
 
 .hero-text {
-    max-width: 550px; /* Adjusted for new font size */
+    max-width: 550px;
 }
 
 .hero-text h1 {
@@ -104,18 +99,21 @@ body, html {
     font-weight: var(--font-weight-regular);
     line-height: 75px;
     color: var(--color-primary);
-    margin-bottom: 20px;
+    margin-top: 0; /* Remove default browser margin */
+    margin-bottom: 15px;
 }
 
 .hero-text p {
     font-size: 20px;
     line-height: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    color: var(--color-primary); /* Updated text color */
 }
 
 .hero-buttons {
     display: flex;
     gap: 15px;
+    margin-bottom: 15px;
 }
 
 .hero-image {
@@ -126,15 +124,12 @@ body, html {
 .hero-image img {
     max-width: 100%;
     height: auto;
+    display: block; /* Ensures proper alignment */
 }
 
-.illustration-section {
-    margin-top: -80px; /* Adjusted overlap */
-    padding-left: 20px;
-}
-
-.illustration-section img {
+.hero-car-illustration {
     width: 200px;
+    display: block; /* Ensures proper alignment */
 }
 
 
@@ -143,10 +138,10 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--color-dark-footer);
+    background-color: var(--color-primary);
     color: var(--color-text-light);
     padding: 15px 40px;
-    margin-top: 100px;
+    flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
 .footer-nav a {
@@ -240,4 +235,48 @@ body, html {
 #app-view textarea {
     min-height: 100px;
     resize: vertical;
+}
+
+/* 8. Responsive Adjustments */
+@media (max-width: 992px) {
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text {
+        max-width: 100%;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-image {
+        margin-top: 40px;
+    }
+
+    .illustration-section {
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .main-nav {
+        flex-direction: column;
+    }
+
+    .hero-text h1 {
+        font-size: 48px;
+        line-height: 60px;
+    }
+
+    .hero-text p {
+        font-size: 18px;
+    }
 }

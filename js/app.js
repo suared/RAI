@@ -554,8 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div id="dynamic-step-content" style="padding: 20px;"></div>
             <div class="navigation-buttons" style="padding: 20px; border-top: 1px solid #eee;">
-                <button class="prev-step" ${index === 0 ? 'disabled' : ''}>« Previous</button>
-                <button class="next-step" ${index === flowSteps.length - 1 || flowSteps[index + 1]?.isFuture ? 'disabled' : ''}>
+                <button class="button prev-step" ${index === 0 ? 'disabled' : ''}>« Previous</button>
+                <button class="button next-step" ${index === flowSteps.length - 1 || flowSteps[index + 1]?.isFuture ? 'disabled' : ''}>
                     ${flowSteps[index + 1]?.isFuture ? 'Next (Future)' : 'Next »'}
                 </button>
             </div>

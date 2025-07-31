@@ -97,7 +97,7 @@ function generateGoalsHTML(stepData, appData) {
         problemStatementsHTML += `
             <li>
                 <input type="text" class="problem-statement-input" value="${ps}" data-index="${index}" placeholder="Enter problem statement">
-                <button type="button" class="remove-problem-statement-btn" data-index="${index}">Remove</button>
+                <button type="button" class="button remove-problem-statement-btn" data-index="${index}">Remove</button>
             </li>`;
     });
     problemStatementsHTML += '</ul>';
@@ -117,7 +117,7 @@ function generateGoalsHTML(stepData, appData) {
         <div>
             <label>Problem Statements (Optional, 1 or many):</label>
             ${problemStatementsHTML}
-            <button type="button" id="add-problem-statement-btn" class="secondary">Add Problem Statement</button>
+            <button type="button" id="add-problem-statement-btn" class="button">Add Problem Statement</button>
         </div>
     `;
 }
@@ -246,7 +246,7 @@ function generateBacklogParserHTML(stepData, appData) {
             <label for="backlog-url-parser">Or, Provide Backlog URL:</label>
             <input type="text" id="backlog-url-parser" placeholder="e.g., https://jira.example.com/backlog.csv" value="${appData.backlogUrl || ''}">
         </div>
-        <button id="parse-backlog-btn" class="primary" style="margin-top:15px;">Parse Backlog</button>
+        <button id="parse-backlog-btn" class="button" style="margin-top:15px;">Parse Backlog</button>
         <div id="parser-loader-container" class="hidden" style="text-align:center; margin-top:10px;">
             <div class="loader"></div> Parsing backlog and generating insights...
         </div>
@@ -289,7 +289,7 @@ function generateDefineEpicsHTML(stepData, appData) {
             
             <label for="epic-description">Epic Description (User Story Format Recommended):</label>
             <textarea id="epic-description" placeholder="As a [user type], I want [goal] so that [benefit]."></textarea>
-            <button id="add-epic-btn-mock" class="secondary">Save Epic (Mock)</button>
+            <button id="add-epic-btn-mock" class="button">Save Epic (Mock)</button>
         </div>
         <hr style="margin: 20px 0;">
         ${existingEpicsHTML}
@@ -302,9 +302,6 @@ function generatePlaceholderHTML(stepData) {
     <div class="step-hero" style="background-image: url('${stepData.heroImage}');"></div>
         <h2>${stepData.title}</h2>
         <p>This step is under construction. Future iterations will enable functionality for ${stepData.shortTitle.toLowerCase()}.</p>
-        <div class="navigation-buttons">
-            <button class="prev-step" ${currentStepIndex === 0 ? 'disabled' : ''}>« Previous</button>
-            <button class="next-step" ${currentStepIndex === flowSteps.length - 1 || flowSteps[currentStepIndex+1]?.isFuture ? 'disabled' : ''}>Next »</button>
         <p>This step, <strong>${stepData.title}</strong>, is a placeholder for future development.</p>
         <p>Functionality for ${stepData.shortTitle.toLowerCase()} will be implemented in subsequent iterations of this application.</p>
         <div style="text-align: center; font-size: 3em; color: #ccc; margin-top: 30px;">
@@ -352,4 +349,36 @@ async function fetchParsedBacklog(fileName, url, userFeedback) {
         features: mockFeatures,
         feedbackCoverage: mockFeedbackCoverage
     };
+}
+
+
+// This function is called to render the content of the current step
+function renderStepContent(stepIndex, appData) {
+    const step = flowSteps[stepIndex];
+    const contentWrapper = document.getElementById('step-content-wrapper');
+    
+    // Generate the main content for the step
+    let contentHTML = step.contentGenerator(step, appData);
+
+    // Add navigation buttons at the bottom, except for the last step (observe)
+    if (step.id !== 'observe') {
+        contentHTML += `<div class="navigation-buttons" style="margin-top: 20px; text-align: right;">`;
+        
+        // Show "Previous" button if not the first step
+        if (step.id !== 'goals') {
+            contentHTML += `<button id="prev-step-btn" class="button">« Previous</button>`;
+        }
+
+        // Determine Next/Start button text and state
+        const nextButtonText = step.id === 'goals' ? 'Start &raquo;' : 'Next »';
+        const isNextDisabled = flowSteps[stepIndex + 1]?.isFuture;
+
+        contentHTML += `
+            <button id="next-step-btn" class="button" ${isNextDisabled ? 'disabled' : ''}>${nextButtonText}</button>
+        `;
+        
+        contentHTML += `</div>`;
+    }
+    
+    contentWrapper.innerHTML = contentHTML;
 }
