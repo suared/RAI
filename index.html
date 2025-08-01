@@ -18,20 +18,28 @@
                 <img src="images/logo.svg" alt="Lastmile Logo">
             </div>
             <nav class="main-nav">
-                <a href="#" class="button">Demo</a>
-                <a href="#" class="button">Documentation</a>
+                <a href="#" class="link">Demo</a>
+                <a href="#" class="link">Documentation</a>
                 <a href="#" class="button" id="start-building-btn">Start Building</a>
             </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </header>
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
 
         <main class="main-content">
             <section class="hero-section">
                 <div class="hero-text">
-                    <h1>One platform.<br>Every AI tool you need.</h1>
-                    <p>Lastmile replaces legacy SI models with an AI-native approach that prioritizes what matters, automates what doesn't, and delivers where others stall.</p>
-                    <div class="hero-buttons">
-                        <a href="#" class="button">How it Works</a>
-                        <a href="#" class="button">Try Lastmile</a>
+                    <div class="hero-content">
+                        <h1>One platform.<br>Every AI tool you need.</h1>
+                        <p>Lastmile replaces legacy SI models with an AI-native approach that prioritizes what matters, automates what doesn't, and delivers where others stall.</p>
+                        <div class="hero-buttons">
+                            <a href="#" class="button secondary">How it Works</a>
+                            <a href="#" class="button">Try Lastmile</a>
+                        </div>
                     </div>
                     <img src="images/yellowcar.svg" alt="Yellow Car Illustration" class="hero-car-illustration">
                 </div>
@@ -76,5 +84,6 @@
     <script src="js/flowsteps.js"></script>
     <script src="js/geminiservice.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/mobile-menu.js"></script>
 </body>
 </html>
